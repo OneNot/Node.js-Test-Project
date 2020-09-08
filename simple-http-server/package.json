@@ -1,0 +1,15 @@
+{
+  "name": "simple-http-server",
+  "version": "1.0.0",
+  "description": "My simple http server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "http",
+    "server"
+  ],
+  "author": "Toni Hannula",
+  "license": "ISC"
+}

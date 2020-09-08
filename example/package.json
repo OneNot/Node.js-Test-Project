@@ -1,0 +1,11 @@
+{
+  "name": "example",
+  "version": "1.0.0",
+  "description": "Example node.js package",
+  "main": "index.js",
+  "scripts": {
+    "test": "node index"
+  },
+  "author": "Toni Hannula",
+  "license": "ISC"
+}
