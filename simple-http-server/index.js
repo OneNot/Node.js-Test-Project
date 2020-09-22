@@ -1,20 +1,33 @@
+//requires
 const http = require('http');
+const express = require('express');
+const morgan = require('morgan'); //logger module
+const bodyParser = require('body-parser');
+
 const port = 3000;
 const hostname = 'localhost';
 
-const express = require('express');
+const app = express(); // Creates an express app
 
-// Creates an express app
-const app = express();
+app.use(morgan("dev"));
+app.use(bodyParser.json());
 
-// Remember to create public-directory and put eg. index.html & about.html there
-app.use(express.static(__dirname+'/public'));
 
-app.use((req, res, next) => {
-    res.statusCode = 200;
-    res.setHeader( 'Content-type', 'text/html');
-    res.end('<html><head><title>Express Server</title></head><body><p>Error jotain</p></body></html>');
-})
+
+
+// app.all("/", function(req, res){
+//     res.statusCode = 200;
+//     res.setHeader("Content-Type", "text/html");
+//     res.end("<html><head><title>Express Router</title></head><body><h1>My Express Router</h1></body></html>");
+// });
+
+// app.use(express.static(__dirname+'/public'));
+
+// app.use((req, res, next) => {
+//     res.statusCode = 404;
+//     res.setHeader( 'Content-type', 'text/html');
+//     res.end('<html><head><title>Express Server</title></head><body><p>Error jotain</p></body></html>');
+// })
 
 // app.get('/', function(req, res){
 //     res.send('Hello world!');
