@@ -54,6 +54,15 @@ connect.then(function(db){
     }])
     .then(function(message){
         console.log("Added:\n", message);
+        return Messages.updateOne({title: "I quit!"},
+        {
+            $push: {
+                comments: Comment({ content: "Good riddance dude", author: "ProgrammerElitist1337", rating: 0 })
+            }
+        }).exec();
+    })
+    .then(function(messages){
+        console.log("Inserted?:\n", messages);
         return Messages.find({}).exec();
     })
     .then(function(messages){

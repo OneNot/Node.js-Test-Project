@@ -14,7 +14,7 @@ const commentSchema = new Schema({
         type: Number,
         required: true
     }
-});
+}, {timestamps: true});
 
 const messageSchema = new Schema({
     title: {
@@ -38,5 +38,3 @@ const messageSchema = new Schema({
 
 var Messages = mongoose.model("Message", messageSchema);
 module.exports = Messages;
-var Comments = mongoose.model("Comment", commentSchema);
-module.exports = Comments;
