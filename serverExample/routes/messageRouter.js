@@ -20,6 +20,8 @@ messageRouter.route('/')
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
         res.json(messages);
+    }).catch((err) => {
+        ErrorResponse(res, "ERROR: " + err.message);
     });
 })
 //CREATE A NEW MESSAGE
@@ -31,6 +33,8 @@ messageRouter.route('/')
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
         res.json(msg);
+    }).catch((err) => {
+        ErrorResponse(res, "ERROR: " + err.message);
     });
 })
 //DELETE ALL MESSAGES
@@ -41,6 +45,8 @@ messageRouter.route('/')
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
         res.json(resp);
+    }).catch((err) => {
+        ErrorResponse(res, "ERROR: " + err.message);
     });
 });
 //TODO: Could handle PUT here as well... Maybe if the user gives the ID in the body, we can use that to update the corresponding message with the rest of the body content?
