@@ -200,7 +200,7 @@ messageRouter.route('/:messageId/comments/:commentId')
     }).catch((err) => {
         ErrorResponse(res, "ERROR: " + err.message);
     });
-});
+}).
 //UPDATE SPECIFIC COMMENT FROM SPECIFIC MESSAGE
 put((req, res, next) => {
     Messages.findById(req.params.messageId)
