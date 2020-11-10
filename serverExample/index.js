@@ -33,7 +33,7 @@ var app = express();
 app.use(morgan('dev'));
 
 //use cookies
-app.use(cookieParser()); //! tarvitaaks keksejä ees enää?
+app.use(cookieParser());
 
 //use session
 app.use(session({
@@ -42,48 +42,21 @@ app.use(session({
     saveUninitialized: false
 }));
 
+const userRouter = require('./routes/userRouter');
+app.use('/users', userRouter);
+
 //basic authentication
 app.use((req, res, next) => {
     console.log("Session data: ", req.session);
 
-    if(req.session.user && req.session.user == "admin")
+    if(req.session.user && req.session.user == "logged in")
         next();
     else
     {
-        var authHeader = req.headers.authorization;
-
-        if(authHeader == null)
-        {
-            console.log("No auth headers found!");
-            res.setHeader("WWW-Authenticate", "Basic");
-            var err = new Error("Not Authenticated!");
-            err.status = 401;
-            next(err);
-        }
-        else
-        {
-            let auth_string = authHeader.split(' ')[1];
-            let decoded_auth_string = new Buffer.from(auth_string, "base64").toString();
-
-            var username = decoded_auth_string.split(":")[0];
-            var password = decoded_auth_string.split(":")[1];
-
-            if(username == "admin" && password == "password")
-            {
-                req.session.user = "admin";
-                next();
-            }
-            else
-            {
-                console.log("Wrong username and/or password");
-                res.setHeader("WWW-Authenticate", "Basic");
-                var err = new Error("Not Authenticated!");
-                err.status = 401;
-                next(err);
-            }
-
-            next();
-        }
+        res.setHeader("WWW-Authenticate", "Basic");
+        let err = new Error("Not Authenticated!");
+        err.status = 401;
+        next(err);
     }
 });
 
