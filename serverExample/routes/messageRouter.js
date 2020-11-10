@@ -1,6 +1,7 @@
 const express = require('express');
 const messageRouter = express.Router();
 const bodyParser = require('body-parser');
+const f = require('../my_modules/MyFunctions');
 
 const Messages = require('../models/messages');
 const { MongoError } = require('mongodb');
@@ -21,7 +22,7 @@ messageRouter.route('/')
         res.setHeader('Content-Type', 'application/json');
         res.json(messages);
     }).catch((err) => {
-        ErrorResponse(res, "ERROR: " + err.message);
+        next(err);
     });
 })
 //CREATE A NEW MESSAGE
@@ -34,7 +35,7 @@ messageRouter.route('/')
         res.setHeader('Content-Type', 'application/json');
         res.json(msg);
     }).catch((err) => {
-        ErrorResponse(res, "ERROR: " + err.message);
+        next(err);
     });
 })
 //DELETE ALL MESSAGES
@@ -46,7 +47,7 @@ messageRouter.route('/')
         res.setHeader('Content-Type', 'application/json');
         res.json(resp);
     }).catch((err) => {
-        ErrorResponse(res, "ERROR: " + err.message);
+        next(err);
     });
 });
 //TODO: Could handle PUT here as well... Maybe if the user gives the ID in the body, we can use that to update the corresponding message with the rest of the body content?
@@ -69,9 +70,9 @@ messageRouter.route('/:messageId')
             res.json(msg);
         }
         else
-            ErrorResponse(res, "ERROR: ID not found!");
+            next(f.CreateError("ERROR: ID not found!", 404));
     }).catch((err) => {
-        ErrorResponse(res, "ERROR: " + err.message);
+        next(err);
     });
 })
 //UPDATE SPECIFIC MESSAGE
@@ -86,9 +87,9 @@ messageRouter.route('/:messageId')
             res.json(msg);
         }
         else
-            ErrorResponse(res, "ERROR: ID not found!");
+            next(f.CreateError("ERROR: ID not found!", 404));
     }).catch((err) => {
-        ErrorResponse(res, "ERROR: " + err.message);
+        next(err);
     });
 })
 //DELETE SPECIFIC MESSAGE
@@ -103,9 +104,9 @@ messageRouter.route('/:messageId')
             res.json(msg);
         }
         else
-            ErrorResponse(res, "ERROR: ID not found!");
+            next(f.CreateError("ERROR: ID not found!", 404));
     }).catch((err) => {
-        ErrorResponse(res, "ERROR: " + err.message);
+        next(err);
     });
 });
 //#endregion
@@ -127,9 +128,9 @@ messageRouter.route('/:messageId/comments')
             res.json(msg.comments);
         }
         else
-            ErrorResponse(res, "ERROR: ID not found!");
+            next(f.CreateError("ERROR: ID not found!", 404));
     }).catch((err) => {
-        ErrorResponse(res, "ERROR: " + err.message);
+        next(err);
     });
 })
 //ADD A COMMENT TO SPECIFIC MESSAGE
@@ -145,13 +146,13 @@ messageRouter.route('/:messageId/comments')
                 res.setHeader('Content-Type', 'application/json');
                 res.json(msg);
             }).catch((err) => {
-                ErrorResponse(res, "ERROR: " + err.message);
+                next(err);
             });
         }
         else
-            ErrorResponse(res, "ERROR: ID not found!");
+            next(f.CreateError("ERROR: ID not found!", 404));
     }).catch((err) => {
-        ErrorResponse(res, "ERROR: " + err.message);
+        next(err);
     });
 });
 //#endregion
@@ -176,12 +177,12 @@ messageRouter.route('/:messageId/comments/:commentId')
                 res.json(comment);
             }
             else
-                ErrorResponse(res, "ERROR: Comment ID not found!");
+                next(f.CreateError("ERROR: Comment ID not found!", 404));
         }
         else
-            ErrorResponse(res, "ERROR: Message ID not found!");
+            next(f.CreateError("ERROR: Message ID not found!", 404));
     }).catch((err) => {
-        ErrorResponse(res, "ERROR: " + err.message);
+        next(err);
     });
 })
 //DELETE SPECIFIC COMMENT FROM SPECIFIC MESSAGE
@@ -196,9 +197,9 @@ messageRouter.route('/:messageId/comments/:commentId')
             res.json(msg);
         }
         else
-            ErrorResponse(res, "ERROR: ID not found!");
+            next(f.CreateError("ERROR: ID not found!", 404));
     }).catch((err) => {
-        ErrorResponse(res, "ERROR: " + err.message);
+        next(err);
     });
 }).
 //UPDATE SPECIFIC COMMENT FROM SPECIFIC MESSAGE
@@ -217,16 +218,16 @@ put((req, res, next) => {
                     res.setHeader('Content-Type', 'application/json');
                     res.json(msg);
                 }).catch((err) => {
-                    ErrorResponse(res, "ERROR: " + err.message);
+                    next(err);
                 });
             }
             else
-                ErrorResponse(res, "ERROR: Comment ID not found!");
+                next(f.CreateError("ERROR: Comment ID not found!", 404));
         }
         else
-            ErrorResponse(res, "ERROR: Message ID not found!");
+            next(f.CreateError("ERROR: Message ID not found!", 404));
     }).catch((err) => {
-        ErrorResponse(res, "ERROR: " + err.message);
+        next(err);
     });
 });
 //#endregion
@@ -235,11 +236,3 @@ put((req, res, next) => {
 
 
 module.exports = messageRouter;
-
-
-function ErrorResponse(resOBJ, errorMsg, statusCode = 404, ContentType = 'text/html')
-{
-    resOBJ.statusCode = statusCode;
-    resOBJ.setHeader('Content-Type', ContentType);
-    resOBJ.end(errorMsg);
-}

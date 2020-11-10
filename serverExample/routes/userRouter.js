@@ -2,6 +2,7 @@ const express = require('express');
 const userRouter = express.Router();
 const bodyParser = require('body-parser');
 const session = require("express-session");
+const f = require('../my_modules/MyFunctions');
 
 const Users = require('../models/users');
 const { MongoError } = require('mongodb');
@@ -20,9 +21,7 @@ userRouter.post("/signup", (req, res, next) => {
             if(user != null)
             {
                 console.log("User " + req.body.username + " already exists!");
-                var err = new Error("User " + req.body.username + " already exists!");
-                err.status = 403;
-                next(err);
+                next(f.CreateError("User " + req.body.username + " already exists!", 403));
             }
             else
             {
@@ -43,9 +42,7 @@ userRouter.post("/signup", (req, res, next) => {
     else
     {
         console.log("username/password missing from body!");
-        let err = new Error("username/password missing from body!");
-        err.status = 403;
-        next(err);
+        next(f.CreateError("username/password missing from body!", 403));
     }
 })
 
@@ -66,9 +63,7 @@ userRouter.post("/login", (req, res, next) => {
         {
             console.log("No auth headers found!");
             res.setHeader("WWW-Authenticate", "Basic");
-            let err = new Error("Not Authenticated!");
-            err.status = 401;
-            next(err);
+            next(f.CreateError("Not Authenticated!", 401));
         }
         else
         {
@@ -82,15 +77,11 @@ userRouter.post("/login", (req, res, next) => {
             .then((foundUser) => {
                 if(foundUser == null)
                 {
-                    let err = new Error("Username " + username + " not found!");
-                    err.status = 403;
-                    next(err);
+                    next(f.CreateError("Username " + username + " not found!", 403));
                 }
                 else if(foundUser.password != password)
                 {
-                    let err = new Error("Wrong password!");
-                    err.status = 403;
-                    next(err);
+                    next(f.CreateError("Wrong password!", 403));
                 }
                 else if(foundUser.username == username && foundUser.password == password)
                 {
@@ -119,9 +110,7 @@ userRouter.get("/logout", (req, res, next) => {
     else
     {
         //user not logged in
-        var err = new Error("You are not logged in!");
-        err.status = 403;
-        next(err);
+        next(f.CreateError("You are not logged in!", 403));
     }
 });
 
