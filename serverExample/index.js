@@ -8,6 +8,7 @@ const morgan = require('morgan');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
+const f = require('./my_modules/MyFunctions');
 
 const port = 3000;
 const hostname = 'localhost';
@@ -42,6 +43,17 @@ app.use(session({
     saveUninitialized: false
 }));
 
+//require passport on app setup
+const passport = require('passport');
+const authenticate = require('./authenticate');
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+
+
+
+
 const userRouter = require('./routes/userRouter');
 app.use('/users', userRouter);
 
@@ -49,15 +61,10 @@ app.use('/users', userRouter);
 app.use((req, res, next) => {
     console.log("Session data: ", req.session);
 
-    if(req.session.user && req.session.user == "logged in")
+    if(req.user)
         next();
     else
-    {
-        res.setHeader("WWW-Authenticate", "Basic");
-        let err = new Error("Not Authenticated!");
-        err.status = 401;
-        next(err);
-    }
+        next(f.CreateError("Not Authenticated!", 403));
 });
 
 //get the routes and mount

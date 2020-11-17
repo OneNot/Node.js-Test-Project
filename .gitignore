@@ -105,3 +105,4 @@ dist
 
 # mongoDB data folder
 serverExample/data/*
+serverExample/config/keys.js
