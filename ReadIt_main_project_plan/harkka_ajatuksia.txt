@@ -1,0 +1,43 @@
+Reddit kopio
+
+-Node.js
+-Express App
+--express-generator
+
+
+Reddit:
+- Posts (can include images)
+- Comments (images?)
+- users -> signup & login
+
+
+==== Pages ====
+GET /posts (root probably redidects here too): 
+Lists all posts. probably to start with just print them all there. later might make pages with like 10 posts each or whatever. Maybe use url get parameters for pages? like /posts?page=2
+Each post displayed might show like 3 latest comments and indicate how many there are in general. Or maybe just the indicator. so like "13 comments". You can then click the post to go to /post/id to see the post with all the comments?
+Each post would also display number of upvotes and the the author.
+Long posts are truncated.
+New post button -> opens GET /post/new
+
+GET /post/new
+Opens a post creator (probably super simple to start with, but might try to plug in something)
+
+POST /post/new
+posts the newly created post -> probably then redirect to that post
+
+GET /post/id
+Shows the full post with comments under it.
+if you are the author, lets you edit it client-side -> on save, send it to PUT /post/id (or maybe open it for editing in a page much like when creating posts)
+You can also create comments from here. On save, send to POST /post/id/comments
+You can also edit comments from here. On save, send to PUT /post/id/comments/commentID
+
+PUT /post/id
+updates the post
+
+POST /post/id/comments
+adds a new comment
+Probably no GET for this one. comments are shown under the post on /post/id
+
+PUT /post/id/comments/commentID
+lets you update your comment.
+You'd probably be able to edit your comment at /post/id client-side and then when you press send, it sends PUT to /post/id/comments/commentID
