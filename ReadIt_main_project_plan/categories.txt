@@ -1,0 +1,3 @@
+Not doing the whole categories thing yet. 
+Will probably do a tag system instead, not sure exactly how I want to control what is shown on the posts page yet, so going to show everything for now.
+The tag system will be made for the posts, but is ignored on the front-end for now.

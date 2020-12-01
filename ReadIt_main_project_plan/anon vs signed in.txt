@@ -1,0 +1,7 @@
+Anyone can view everything (possibly add a private tag later that allows only logged in members to view tagged posts?)
+You need to be logged in to:
+- make/edit a post
+- make/edit a comment
+- give ratings
+
+Attempting to do an unauthorized action prompts login.
