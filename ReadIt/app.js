@@ -12,6 +12,7 @@ const mongodb = require('mongodb');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
 const flash = require('connect-flash');
+const authenticate = require('./authenticate');
 
 
 //DB connection

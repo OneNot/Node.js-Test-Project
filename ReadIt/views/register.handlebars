@@ -38,3 +38,11 @@
     <button type="submit" class="button">Register</button>
 </form>
 <a href="/users/login">Login to an existing profile</a>
+{{#if errors}}
+    <h3>Errors:</h3>
+    <ul>
+        {{#each errors}}
+            <li>{{this.msg}}</li>
+        {{/each}}
+    </ul>
+{{/if}}
