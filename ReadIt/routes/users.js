@@ -1,22 +1,15 @@
-// var express = require('express');
-// var router = express.Router();
-// const passport = require('passport');
+var express = require('express');
+var router = express.Router();
 
-// // importing User Schema  
-// const User = require('../models/user');
+//Register
+router.get('/register', function(req, res, next) {
+  res.render('register', { pageTitle: 'Register' });
+});
 
-// app.get('/logout', function(req, res){
-//   console.log('logging out');
-//   req.logout();
-//   res.redirect('/');
-// });
-
-
+//Login
+router.get('/login', function(req, res, next) {
+  res.render('login', { pageTitle: 'Login' });
+});
 
 
-// /* GET users listing. */
-// router.get('/', function(req, res, next) {
-//   res.send('respond with a resource');
-// });
-
-// module.exports = router;
+module.exports = router;

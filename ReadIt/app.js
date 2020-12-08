@@ -3,6 +3,7 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
+const handlebars = require('express-handlebars');
 const expressValidator = require('express-validator');
 const expressSession = require('express-session');
 const passport = require('passport');
@@ -41,7 +42,8 @@ var app = express();
 
 //View Engine
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'pug');
+app.engine('handlebars', handlebars({defaultLayout:'layout'}));
+app.set('view engine', 'handlebars');
 
 
 //Dev logging
@@ -90,7 +92,7 @@ app.use((req, res, next) => {
 
 //Set Routes
 app.use('/', indexRouter);
-//app.use('/users', usersRouter);
+app.use('/users', usersRouter);
 
 
 //! I don't understand how this works, but I'll leave it here anyways for now
