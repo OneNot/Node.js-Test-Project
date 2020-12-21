@@ -27,6 +27,17 @@ a {
   height: 100%;
   top: 0px;
   right: 0px;
+  margin-right: 3px;
+}
+#header-logo {
+  position: absolute;
+  height: 100%;
+  top: 0;
+  left: 0;
+  margin-left: 3px;
+}
+#header-logo > img {
+  height: 100%;
 }
 
 /*=== PAGE CONTENT ===*/

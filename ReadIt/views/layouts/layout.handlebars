@@ -8,8 +8,18 @@
 </head>
 <body>
     <div id="page-header">
+        <a id="header-logo" href="/">
+            <img src="https://2014mirimstudent49.files.wordpress.com/2014/03/temp-logo.png" alt="ReadIt" title="ReadIt"/>
+        </a>
         <h1>{{pageTitle}}</h1>
-        <div id="header-user"><span>USER</span></div>
+        <div id="header-user">
+            {{#with user}}
+                <a style="font-size: 1.5em;" href="/users/profile/{{username}}">{{displayName}}</a><br>
+                <a href="/users/logout">Logout</a>
+            {{else}}
+                <a href="/users/login">LOGIN</a>
+            {{/with}}
+        </div>
     </div>
     <div id="main">
         {{{body}}}

@@ -22,3 +22,11 @@
     <button type="submit" class="button">Login</button>
 </form>
 <a href="/users/register">Register a new profile</a>
+{{#if errors}}
+    <h3>Errors:</h3>
+    <ul>
+        {{#each errors}}
+            <li>{{this.msg}}</li>
+        {{/each}}
+    </ul>
+{{/if}}

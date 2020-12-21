@@ -1,38 +1,61 @@
 var express = require('express');
 var router = express.Router();
+const bodyParser = require('body-parser');
+const session = require("express-session");
+const passport = require('passport');
+const User = require('../models/user');
 
 //validator
 const { body, validationResult } = require('express-validator');
 
+router.use(bodyParser.json());
 
-//Register
+//Register GET page
 router.get('/register', function(req, res, next) {
-  res.render('register', { pageTitle: 'Register' });
+  //if logged in
+  if(req.user)
+    res.redirect('/users/profile/'+req.user.username);
+  else
+    res.render('register', { pageTitle: 'Register' });
 });
 
+//Register POST
 router.post('/register', [
-  body("email").trim().notEmpty().withMessage("Email cannot be empty")
-  .normalizeEmail().isEmail().withMessage("Invalid email"),
+  //TODO: If logged in -> abort and redirect to user page
+  //Validate email -> can't be empty and must be valid email format
+  body("email").trim().escape().notEmpty().withMessage("Email cannot be empty")
+  .isEmail().withMessage("Invalid email"),
 
-  body("username").trim().isLength({min: 4, max: 30}).withMessage("Username must be between 4 and 30 characters long")
+  //! NOTE: I assume body().escape() etc. change the actual value in body? i.e. req.body.email can later be used?
+
+  //Validate username -> must be 4-30 characters and contain only a-z & 0-9 & _
+  body("username").trim().escape().isLength({min: 4, max: 30}).withMessage("Username must be between 4 and 30 characters long")
   .matches('^[A-Z|a-z|0-9|_]+$').withMessage("Username can only contain characters a-z, 0-9 and _"), //only allowing a-z, 0-9 and _ for now //TODO: allow äö etc.
   
-  body("password").isLength({min: 5}).withMessage("Password must be at least 5 characters long")
-  .contains(),
+  //Validate password with password-validator schema
+  body("password").isLength({min: 6, max: 100}).withMessage("Password must be 5-100 characters long")
+  .matches(/\d/).withMessage("Password must contain at least one number")
+  .matches(/[!@#$%^&*(),.?":{}|<>]/).withMessage("Password must contain at least one symbol"),
+
+  //Validate password confirm
   body('password2').custom((value, { req }) => {
     if (value !== req.body.password) {
       throw new Error('Password confirmation does not match password');
     }
 
-    // Indicates the success of this synchronous custom validator
     return true;
   })
+
+  //validation over
 ], (req, res, next) => {
   const errors = validationResult(req);
+
+  //if there were validation errors...
   if (!errors.isEmpty())
   {
     console.log(errors.array());
 
+    //re-load page with errors
     res.render('register', {
       pageTitle: 'Register',
       errors: errors.array()
@@ -40,15 +63,121 @@ router.post('/register', [
   }
   else
   {
+    //if there were no validation errors
     console.log("Valid fields received from Register");
-    
+    //Register new user
+    //! username is made lowercase by passport-local-mongoose, displayName remains as given
+    User.register(new User({displayName: req.body.username, email: req.body.email, username: req.body.username}), req.body.password, (err, user) => {
+      if(err)
+      {
+        console.log(["User registration failed: " + err]);
+        //re-load page with errors
+        res.render('register', {
+          pageTitle: 'Register',
+          errors: [{msg: err}]
+        });
+      }
+      else
+      {
+        passport.authenticate("local")(req, res, () => {
+          res.redirect('/');
+        });
+
+      }
+    });
   }
 });
 
 
-//Login
+//Login GET page
 router.get('/login', function(req, res, next) {
-  res.render('login', { pageTitle: 'Login' });
+  //if logged in
+  if(req.user)
+    res.redirect('/users/profile/'+req.user.username);
+  else
+    res.render('login', { pageTitle: 'Login'});
+});
+
+//Login POST
+router.post('/login', function(req, res, next) {
+  //if logged in
+  if(req.user)
+    res.redirect('/users/profile/'+req.user.username);
+  else
+  {
+    passport.authenticate('local', function(err, user, info) {
+      if(err || !user)
+      {
+        //TODO: no real error reporting to user yet...
+        console.log(err);
+        console.log(user);
+        res.render('login', {pageTitle: 'Login', errors: [{msg: "Invalid login"}]});
+      }
+      else
+      {
+        req.logIn(user, function(err) {
+          if(err)
+          {
+            console.log(err);
+            res.render('login', {pageTitle: 'Login', errors: [{msg: "Failed to login"}]});
+          }
+          else
+          {
+            return res.redirect('/users/profile/' + user.username);
+          }
+        });
+      }
+    })(req, res, next);
+  }
+});
+
+//Logout GET
+router.get('/logout', function(req, res){
+  req.logout();
+  res.redirect('/');
+});
+
+//User page GET
+router.get('/profile/:displayName', function(req, res, next) {
+  //TODO: this
+  //If logged in and viewing own page -> show things
+  //else show limited things
+
+  User.findByUsername(req.params.displayName.toLowerCase()).then(function(FoundUser){
+    console.log(FoundUser);
+
+    //Found User
+    let _jsonFoundUser = null, _jsonUser = null, _ownPage = false;
+    if(FoundUser)
+    {
+      _jsonFoundUser = {
+        username: FoundUser.username,
+        displayName: FoundUser.displayName,
+        email: FoundUser.email
+      };
+    }
+
+    //Signed in user
+    if(req.user)
+    {
+      _jsonUser = {
+        username: req.user.username,
+        displayName: req.user.displayName
+      };
+    }
+
+    if(_jsonFoundUser && _jsonUser && _jsonFoundUser.username == _jsonUser.username)
+    {
+      console.log("own page");
+      _ownPage = true;
+    }
+
+    res.render('profile', { pageTitle: 'Profile Page', user: _jsonUser, foundUser: _jsonFoundUser, ownPage: _ownPage });
+
+  }).catch(function(err) {
+    console.log("error in findByUsername: " + err);
+    next(err); //!not really sure what even happens when this is called here
+  });
 });
 
 

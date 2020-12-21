@@ -1,0 +1,23 @@
+<div>
+    {{#if foundUser}}
+    <ul>
+        {{#with foundUser}}
+            {{#if displayName}}
+                <li><span>Username: {{displayName}}</span></li>
+            {{/if}}
+            {{#if email}}
+                <li><span>Email: {{email}}</span></li>
+            {{/if}}
+        {{/with}}
+        {{#if ownPage}}
+            <li><span>(your profile)</span></li>
+        {{/if}}
+    </ul>
+    <div>
+        <h2>Posts by user</h2>
+        <p>Posts go here...</p>
+    </div>
+    {{else}}
+        <p>No such user exists.</p>
+    {{/if}}
+</div>

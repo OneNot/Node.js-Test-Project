@@ -106,3 +106,51 @@ dist
 # mongoDB data folder
 serverExample/data/*
 serverExample/config/keys.js
+ReadIt_main_project_plan/Malli/myMessageServer/app.js
+ReadIt_main_project_plan/Malli/myMessageServer/authenticate.js
+ReadIt_main_project_plan/Malli/myMessageServer/bin/www
+ReadIt_main_project_plan/Malli/myMessageServer/config/keys.js
+ReadIt_main_project_plan/Malli/myMessageServer/data/_mdb_catalog.wt
+ReadIt_main_project_plan/Malli/myMessageServer/data/collection-0--4148311235825453716.wt
+ReadIt_main_project_plan/Malli/myMessageServer/data/collection-0-2964348811520664082.wt
+ReadIt_main_project_plan/Malli/myMessageServer/data/collection-2--4148311235825453716.wt
+ReadIt_main_project_plan/Malli/myMessageServer/data/collection-2-2964348811520664082.wt
+ReadIt_main_project_plan/Malli/myMessageServer/data/collection-4--4148311235825453716.wt
+ReadIt_main_project_plan/Malli/myMessageServer/data/diagnostic.data/metrics.2020-12-01T13-49-51Z-00000
+ReadIt_main_project_plan/Malli/myMessageServer/data/diagnostic.data/metrics.2020-12-08T10-39-30Z-00000
+ReadIt_main_project_plan/Malli/myMessageServer/data/diagnostic.data/metrics.2020-12-08T13-40-53Z-00000
+ReadIt_main_project_plan/Malli/myMessageServer/data/diagnostic.data/metrics.interim
+ReadIt_main_project_plan/Malli/myMessageServer/data/index-1--4148311235825453716.wt
+ReadIt_main_project_plan/Malli/myMessageServer/data/index-1-2964348811520664082.wt
+ReadIt_main_project_plan/Malli/myMessageServer/data/index-3--4148311235825453716.wt
+ReadIt_main_project_plan/Malli/myMessageServer/data/index-3-2964348811520664082.wt
+ReadIt_main_project_plan/Malli/myMessageServer/data/index-5--4148311235825453716.wt
+ReadIt_main_project_plan/Malli/myMessageServer/data/index-6--4148311235825453716.wt
+ReadIt_main_project_plan/Malli/myMessageServer/data/journal/WiredTigerLog.0000000003
+ReadIt_main_project_plan/Malli/myMessageServer/data/journal/WiredTigerPreplog.0000000001
+ReadIt_main_project_plan/Malli/myMessageServer/data/journal/WiredTigerPreplog.0000000002
+ReadIt_main_project_plan/Malli/myMessageServer/data/mongod.lock
+ReadIt_main_project_plan/Malli/myMessageServer/data/sizeStorer.wt
+ReadIt_main_project_plan/Malli/myMessageServer/data/storage.bson
+ReadIt_main_project_plan/Malli/myMessageServer/data/WiredTiger
+ReadIt_main_project_plan/Malli/myMessageServer/data/WiredTiger.lock
+ReadIt_main_project_plan/Malli/myMessageServer/data/WiredTiger.turtle
+ReadIt_main_project_plan/Malli/myMessageServer/data/WiredTiger.wt
+ReadIt_main_project_plan/Malli/myMessageServer/data/WiredTigerHS.wt
+ReadIt_main_project_plan/Malli/myMessageServer/models/message.js
+ReadIt_main_project_plan/Malli/myMessageServer/models/user.js
+ReadIt_main_project_plan/Malli/myMessageServer/package-lock.json
+ReadIt_main_project_plan/Malli/myMessageServer/package.json
+ReadIt_main_project_plan/Malli/myMessageServer/public/stylesheets/style.css
+ReadIt_main_project_plan/Malli/myMessageServer/routes/index.js
+ReadIt_main_project_plan/Malli/myMessageServer/routes/messageRouter.js
+ReadIt_main_project_plan/Malli/myMessageServer/routes/signup.js
+ReadIt_main_project_plan/Malli/myMessageServer/routes/users.js
+ReadIt_main_project_plan/Malli/myMessageServer/views/error.pug
+ReadIt_main_project_plan/Malli/myMessageServer/views/index.pug
+ReadIt_main_project_plan/Malli/myMessageServer/views/layout.pug
+ReadIt_main_project_plan/Malli/myMessageServer/views/messages.pug
+ReadIt_main_project_plan/Malli/myMessageServer/views/signup.pug
+ReadIt_main_project_plan/old PUG/error.pug
+ReadIt_main_project_plan/old PUG/layout.pug
+ReadIt_main_project_plan/old PUG/posts.pug
