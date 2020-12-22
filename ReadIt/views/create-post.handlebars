@@ -1,0 +1,29 @@
+<div>
+    <form id="create-post-form" action="/posts/create-post" method="POST">
+        <label for="title"><input name="title" type="text" placeholder="Post Title" required/></label>
+        <textarea name="content" placeholder="Post content..." required></textarea>
+        <div id="tag-dropdown-container">
+            <div id="tag-dropdown-header"><span>Tags</span><span id="tag-dropdown-header-arrow">▼</span></div>
+            <div id="tag-dropdown-body">
+                <ul class="tags">
+                    <li><label><input type="checkbox" name="tags" value="tag1"/>tag1</label></li>
+                    <li><label><input type="checkbox" name="tags" value="tag2"/>tag2</label></li>
+                    <li><label><input type="checkbox" name="tags" value="tag3"/>tag3</label></li>
+                    <li><label><input type="checkbox" name="tags" value="tag4"/>tag4</label></li>
+                    <li><label><input type="checkbox" name="tags" value="tag5"/>tag5</label></li>
+                    <li><label><input type="checkbox" name="tags" value="tag6"/>tag6</label></li>
+                    <li><label><input type="checkbox" name="tags" value="tag7"/>tag7</label></li>
+                </ul>
+            </div>
+        </div>
+        <input name="submit" type="submit" value="Post"/>
+    </form>
+</div>
+{{#if errors}}
+    <h3>Errors:</h3>
+    <ul>
+        {{#each errors}}
+            <li>{{this.msg}}</li>
+        {{/each}}
+    </ul>
+{{/if}}

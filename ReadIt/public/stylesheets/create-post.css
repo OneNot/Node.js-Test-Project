@@ -1,0 +1,93 @@
+#create-post-form {
+    width: 900px;
+    max-width: 100%;
+    margin: auto;
+    text-align: left;
+}
+#create-post-form label {
+    display: block;
+    margin: 0 auto 15px auto;
+}
+#create-post-form input,
+#create-post-form textarea {
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px;
+    width: 100%;
+}
+#create-post-form input[name='title'] {
+    height: 40px;
+    text-align: center;
+    font-size: 27px;
+}
+#create-post-form textarea {
+    display: block;
+    margin: 0 auto 5px auto;
+    font-size: 16px;
+    height: 250px;
+    overflow-y: auto;
+}
+#create-post-form input[name='submit'] {
+    width: auto;
+    height: 40px;
+    font-size: 20px;
+    cursor: pointer;
+    display: inline-block;
+    vertical-align: top;
+}
+#create-post-form input[name='submit']:hover,
+#create-post-form input[name='submit']:active,
+#create-post-form input[name='submit']:focus {
+    background-color: #444;
+    border: solid #888 2px;
+}
+
+#tag-dropdown-container {
+    display: inline-block;
+    width: auto;
+    max-width: 100%;
+    background-color: #393939;
+    border-radius: 5px;
+    margin: 0 auto 15px auto;
+}
+#tag-dropdown-header {
+    width: 100px;
+    max-width: 100%;
+    background-color: #333;
+    border-radius: 5px;
+    height: 40px;
+    font-size: 24px;
+    text-align: center;
+    padding: 5px;
+    cursor: pointer;
+}
+#tag-dropdown-header:hover,
+#tag-dropdown-header:active,
+#tag-dropdown-header:focus {
+    background-color: #444;
+    border: solid #888 2px;
+}
+#tag-dropdown-header-arrow {
+    float: right;
+}
+#tag-dropdown-body {
+    display: none;
+}
+#tag-dropdown-body ul.tags {
+    list-style-type: none;
+    padding: 10px;
+    margin: 0;
+}
+#tag-dropdown-body ul.tags label {
+    margin: unset;
+    display: unset;
+}
+#tag-dropdown-body ul.tags li {
+    font-size: 20px;
+}
+#tag-dropdown-body ul.tags input {
+    width: unset;
+    scale: 1.5;
+}

@@ -35,6 +35,7 @@ var DBConnection = mongoose.connection;
 //routes
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var postsRouter = require('./routes/posts');
 
 
 //Init App
@@ -94,9 +95,10 @@ app.use((req, res, next) => {
 //Set Routes
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/posts', postsRouter);
 
 
-//! I don't understand how this works, but I'll leave it here anyways for now
+//! Not entirely sure how this works. I guess it's like... if no other route is used this is used to send a 404
 //#region ========== Some kind of error handling =============
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

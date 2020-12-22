@@ -1,5 +1,5 @@
 var express = require('express');
-var router = express.Router();
+var usersRouter = express.Router();
 const bodyParser = require('body-parser');
 const session = require("express-session");
 const passport = require('passport');
@@ -8,10 +8,10 @@ const User = require('../models/user');
 //validator
 const { body, validationResult } = require('express-validator');
 
-router.use(bodyParser.json());
+usersRouter.use(bodyParser.json());
 
 //Register GET page
-router.get('/register', function(req, res, next) {
+usersRouter.get('/register', function(req, res, next) {
   //if logged in
   if(req.user)
     res.redirect('/users/profile/'+req.user.username);
@@ -20,7 +20,7 @@ router.get('/register', function(req, res, next) {
 });
 
 //Register POST
-router.post('/register', [
+usersRouter.post('/register', [
   //TODO: If logged in -> abort and redirect to user page
   //Validate email -> can't be empty and must be valid email format
   body("email").trim().escape().notEmpty().withMessage("Email cannot be empty")
@@ -90,7 +90,7 @@ router.post('/register', [
 
 
 //Login GET page
-router.get('/login', function(req, res, next) {
+usersRouter.get('/login', function(req, res, next) {
   //if logged in
   if(req.user)
     res.redirect('/users/profile/'+req.user.username);
@@ -99,7 +99,7 @@ router.get('/login', function(req, res, next) {
 });
 
 //Login POST
-router.post('/login', function(req, res, next) {
+usersRouter.post('/login', function(req, res, next) {
   //if logged in
   if(req.user)
     res.redirect('/users/profile/'+req.user.username);
@@ -132,13 +132,13 @@ router.post('/login', function(req, res, next) {
 });
 
 //Logout GET
-router.get('/logout', function(req, res){
+usersRouter.get('/logout', function(req, res){
   req.logout();
   res.redirect('/');
 });
 
 //User page GET
-router.get('/profile/:displayName', function(req, res, next) {
+usersRouter.get('/profile/:displayName', function(req, res, next) {
   //TODO: this
   //If logged in and viewing own page -> show things
   //else show limited things
@@ -181,4 +181,4 @@ router.get('/profile/:displayName', function(req, res, next) {
 });
 
 
-module.exports = router;
+module.exports = usersRouter;
