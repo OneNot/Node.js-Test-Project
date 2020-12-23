@@ -4,6 +4,8 @@ const bodyParser = require('body-parser');
 const session = require("express-session");
 const passport = require('passport');
 const User = require('../models/user');
+const Post = require('../models/post');
+const he = require('he');
 
 //validator
 const { body, validationResult } = require('express-validator');
@@ -139,10 +141,6 @@ usersRouter.get('/logout', function(req, res){
 
 //User page GET
 usersRouter.get('/profile/:displayName', function(req, res, next) {
-  //TODO: this
-  //If logged in and viewing own page -> show things
-  //else show limited things
-
   User.findByUsername(req.params.displayName.toLowerCase()).then(function(FoundUser){
     console.log(FoundUser);
 
@@ -172,8 +170,31 @@ usersRouter.get('/profile/:displayName', function(req, res, next) {
       _ownPage = true;
     }
 
-    res.render('profile', { pageTitle: 'Profile Page', user: _jsonUser, foundUser: _jsonFoundUser, ownPage: _ownPage });
+    Post.find({author: FoundUser._id})
+    .populate('author')
+    .sort({'updatedAt': -1})
+    .limit(10)
+    .exec(function(err, posts) {
+      let jsonifiedResult = null;
+      if(err)
+      {
+        console.log(err);
+      }
+      else
+      {
+        jsonifiedResult = JSON.parse(JSON.stringify(posts));
+      }
+      console.log(jsonifiedResult);
+      for (let index = 0; index < jsonifiedResult.length; index++) {
+        jsonifiedResult[index].author = posts[index].author.displayName;
+        jsonifiedResult[index].authorUrl = "/users/profile/" + posts[index].author.username;
+        jsonifiedResult[index].title = he.decode(jsonifiedResult[index].title);
+        jsonifiedResult[index].content = he.decode(jsonifiedResult[index].content);
+      }
+      console.log(jsonifiedResult);
 
+      res.render('profile', { pageTitle: 'Profile Page: ' + _jsonFoundUser.displayName, user: _jsonUser, posts: jsonifiedResult, foundUser: _jsonFoundUser, ownPage: _ownPage, extraCSS: ["posts", "profile"] });
+    });
   }).catch(function(err) {
     console.log("error in findByUsername: " + err);
     next(err); //!not really sure what even happens when this is called here

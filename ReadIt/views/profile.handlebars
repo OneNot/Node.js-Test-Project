@@ -1,23 +1,37 @@
-<div>
-    {{#if foundUser}}
-    <ul>
-        {{#with foundUser}}
-            {{#if displayName}}
-                <li><span>Username: {{displayName}}</span></li>
-            {{/if}}
-            {{#if email}}
-                <li><span>Email: {{email}}</span></li>
-            {{/if}}
-        {{/with}}
-        {{#if ownPage}}
-            <li><span>(your profile)</span></li>
+{{#if foundUser}}
+<ul>
+    {{#with foundUser}}
+        {{#if displayName}}
+            <li><span>Username: </span><span id="username">{{displayName}}</span></li>
         {{/if}}
-    </ul>
-    <div>
-        <h2>Posts by user</h2>
-        <p>Posts go here...</p>
-    </div>
-    {{else}}
-        <p>No such user exists.</p>
+        {{#if email}}
+            <li><span>Email: </span><span id="email">{{email}}</span></li>
+        {{/if}}
+    {{/with}}
+    {{#if ownPage}}
+        <li><span>(your profile)</span></li>
     {{/if}}
+</ul>
+<h2 id="posts-header">Posts by user</h2>
+<div id="posts-container">
+    {{#each posts}}
+        <div class="post-container">
+            <div class="post-header">
+                <h3 class="post-title">{{this.title}}</h3>
+                <span class="post-author">by: <a href="{{this.authorUrl}}">{{this.author}}</a></span>
+            </div>
+            <div class="post-body">
+                <pre class="post-content">{{this.content}}</pre>
+            </div>
+            <div class="post-footer">
+                <a href="#" class="post-vote post-upvote">▲</a>
+                <span>/</span>
+                <a href="#" class="post-vote post-downvote">▼</a>
+                <span class="post-score">{{this.points}}</span>
+            </div>
+        </div>
+    {{/each}}
 </div>
+{{else}}
+    <p>No such user exists.</p>
+{{/if}}

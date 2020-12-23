@@ -2,6 +2,7 @@ var express = require('express');
 const bodyParser = require('body-parser');
 var postsRouter = express.Router();
 const Post = require('../models/post');
+const he = require('he');
 //validator
 const { body, validationResult } = require('express-validator');
 
@@ -19,7 +20,32 @@ postsRouter.get('/', function(req, res, next) {
       displayName: req.user.displayName
     };
   }
-  res.render('posts', { pageTitle: 'Posts', user: jsonUser, extraCSS: ["posts"]});
+
+  Post.find({})
+  .populate('author')
+  .sort({'updatedAt': -1})
+  .limit(10)
+  .exec(function(err, posts) {
+    let jsonifiedResult = null;
+    if(err)
+    {
+      console.log(err);
+    }
+    else
+    {
+      jsonifiedResult = JSON.parse(JSON.stringify(posts));
+    }
+    console.log(jsonifiedResult);
+    for (let index = 0; index < jsonifiedResult.length; index++) {
+      jsonifiedResult[index].author = posts[index].author.displayName;
+      jsonifiedResult[index].authorUrl = "/users/profile/" + posts[index].author.username;
+      jsonifiedResult[index].title = he.decode(jsonifiedResult[index].title);
+      jsonifiedResult[index].content = he.decode(jsonifiedResult[index].content);
+    }
+    console.log(jsonifiedResult);
+
+    res.render('posts', { pageTitle: 'Posts', user: jsonUser, extraCSS: ["posts"], posts: jsonifiedResult });
+  });
 });
 
 postsRouter.get('/create-post', function(req, res, next) {
@@ -68,7 +94,7 @@ postsRouter.post('/create-post', [
     {
       //No validation errors
       console.log("No validation errors, starting to create doc");
-      Post.create({author: req.user.username, title: req.body.title, content: req.body.content, tags: req.body.tags})
+      Post.create({author: req.user._id, title: req.body.title, content: req.body.content, tags: req.body.tags})
       .then((msg) => {
         console.log("doc created");
         //TODO: redirect to newly created post

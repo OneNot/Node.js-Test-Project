@@ -24,7 +24,8 @@ a {
 #page-header > h1 {
   text-align: center;
   margin: 0px;
-  padding: 0px
+  padding: 0px;
+  font-size: 42px;
 }
 #header-user {
   position: absolute;
@@ -32,6 +33,7 @@ a {
   top: 0px;
   right: 0px;
   margin-right: 3px;
+  text-align: right;
 }
 #header-logo {
   position: absolute;
@@ -50,7 +52,7 @@ a {
   min-width: 500px;
   max-width: 1500px;
   background-color: #555;
-  padding: 50px;
+  padding: 20px 50px 50px 50px;
   border-radius: 0 0 20px 20px;
   text-align: center;
 }

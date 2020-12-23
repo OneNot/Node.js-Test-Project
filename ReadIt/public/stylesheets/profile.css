@@ -1,0 +1,17 @@
+ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+li {
+    font-size: 20px;
+}
+#username, #email {
+    display: block;
+    font-size: 30px;
+    margin-bottom: 20px;
+}
+#posts-header {
+    font-size: 38px;
+    margin: 50px 20px 20px 20px;
+}

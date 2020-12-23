@@ -1,1 +1,21 @@
-<span>Posts go here...</span>
+<div id="posts-container">
+    {{#each posts}}
+        <div class="post-container">
+            <div class="post-header">
+                <h3 class="post-title">{{this.title}}</h3>
+                <span class="post-author">by: <a href="{{this.authorUrl}}">{{this.author}}</a></span>
+            </div>
+            <div class="post-body">
+                <pre class="post-content">{{this.content}}</pre>
+            </div>
+            <div class="post-footer">
+                <a href="#" class="post-vote post-upvote">▲</a>
+                <span>/</span>
+                <a href="#" class="post-vote post-downvote">▼</a>
+                <span class="post-score">{{this.points}}</span>
+            </div>
+        </div>
+    {{/each}}
+</div>
+<br>
+<a class="new-post-link" href="/posts/create-post">NEW POST</a>
