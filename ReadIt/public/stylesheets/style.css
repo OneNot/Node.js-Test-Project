@@ -8,8 +8,11 @@ body {
   padding: 0;
   margin: 0;
 }
-a {
-  color: #00B7FF;
+a, a:visited {
+  color: #5CA5C1;
+}
+a:hover, a:active, a:focus {
+  color: #35C7FF;
 }
 
 /*=== HEADER ===*/
@@ -26,6 +29,12 @@ a {
   margin: 0px;
   padding: 0px;
   font-size: 42px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  max-width: calc(100% - 300px);
+  margin: auto;
 }
 #header-user {
   position: absolute;

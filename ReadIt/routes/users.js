@@ -179,6 +179,7 @@ usersRouter.get('/profile/:displayName', function(req, res, next) {
       if(err)
       {
         console.log(err);
+        next(err);
       }
       else
       {
@@ -190,10 +191,26 @@ usersRouter.get('/profile/:displayName', function(req, res, next) {
         jsonifiedResult[index].authorUrl = "/users/profile/" + posts[index].author.username;
         jsonifiedResult[index].title = he.decode(jsonifiedResult[index].title);
         jsonifiedResult[index].content = he.decode(jsonifiedResult[index].content);
+        if(req.user)
+        {
+          let vote = jsonifiedResult[index].votes.find((x) => x.user.toString() == req.user._id.toString());
+          if(vote && vote.state == 1)
+            jsonifiedResult[index].upvoted = true;
+          else if(vote && vote.state == -1)
+            jsonifiedResult[index].downvoted = true;
+        }
       }
       console.log(jsonifiedResult);
 
-      res.render('profile', { pageTitle: 'Profile Page: ' + _jsonFoundUser.displayName, user: _jsonUser, posts: jsonifiedResult, foundUser: _jsonFoundUser, ownPage: _ownPage, extraCSS: ["posts", "profile"] });
+      res.render('profile', {
+        pageTitle: 'Profile Page: ' + _jsonFoundUser.displayName,
+        user: _jsonUser,
+        posts: jsonifiedResult,
+        foundUser: _jsonFoundUser,
+        ownPage: _ownPage,
+        extraCSS: ["posts", "profile"],
+        extraJS: ["posts"]
+      });
     });
   }).catch(function(err) {
     console.log("error in findByUsername: " + err);

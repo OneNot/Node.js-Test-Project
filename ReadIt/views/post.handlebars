@@ -1,27 +1,12 @@
-{{#if foundUser}}
-<ul>
-    {{#with foundUser}}
-        {{#if displayName}}
-            <li><span>Username: </span><span id="username">{{displayName}}</span></li>
-        {{/if}}
-        {{#if email}}
-            <li><span>Email: </span><span id="email">{{email}}</span></li>
-        {{/if}}
-    {{/with}}
-    {{#if ownPage}}
-        <li><span>(your profile)</span></li>
-    {{/if}}
-</ul>
-<h2 id="posts-header">Posts by user</h2>
 <div id="posts-container">
-    {{#each posts}}
+    {{#with post}}
         <div class="post-container">
             <div class="post-header">
-                <h3 class="post-title" title="{{this.title}}"><a href="/posts/{{this._id}}">{{this.title}}</a></h3>
-                <span class="post-author">by: <a href="{{this.authorUrl}}">{{this.author}}</a></span>
+                <h3 class="post-title" title="{{title}}">{{title}}</h3>
+                <span class="post-author">by: <a href="{{authorUrl}}">{{author}}</a></span>
             </div>
             <div class="post-body">
-                <pre class="post-content">{{this.content}}</pre>
+                <pre class="post-content">{{content}}</pre>
             </div>
             <div class="post-footer">
                 <div class="post-score-container">
@@ -31,12 +16,12 @@
                     <span class="post-score">{{this.points}}</span>
                 </div>
                 <div class="post-footer-comment-container">
-                    <a class="post-footer-comment" href="#"><img src="/images/icons/comment-icon.png" /> {{numOfComments}}</a>
+                    <a id="post-reply-button" href="#">Reply</a><a class="post-footer-comment" href="#"><img src="/images/icons/comment-icon.png" />{{numOfComments}}</a>
                 </div>
             </div>
-            {{#if this.comments}}
+            {{#if comments}}
             <div class="post-comments-container">
-                {{#each this.comments}}
+                {{#each comments}}
                     <div class="post-comment-container">
                         <div class="post-comment-header">
                             <a href="#">AUTHOR</a>
@@ -59,8 +44,7 @@
             </div>
             {{/if}}
         </div>
-    {{/each}}
+    {{else}}
+        <p>Post not found!</p>
+    {{/with}}
 </div>
-{{else}}
-    <p>No such user exists.</p>
-{{/if}}

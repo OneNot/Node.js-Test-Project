@@ -8,7 +8,7 @@
 }
 
 .post-container {
-    background-color: #333;
+    background-color: #2c2d33;
     border-radius: 10px;
     width: 650px;
     width: stretch;
@@ -20,7 +20,6 @@
 }
 
 .post-header {
-    background-color: rgba(8, 0, 255, 0.025);
     border-radius: 10px 10px 0 0;
     padding: 10px;
 }
@@ -33,15 +32,18 @@
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
 }
+.post-title a {
+    text-decoration: none;
+}
 .post-author {
     margin: 0;
     padding: 0;
 }
 .post-body {
-    border-left: 50px solid rgba(8, 0, 255, 0.025);
-    border-right: 50px solid rgba(8, 0, 255, 0.025);
+    border-left: 50px solid transparent;
+    border-right: 50px solid transparent;
 }
-.post-body pre {
+.post-content {
     margin: 0;
     padding: 10px;
     word-wrap: break-word;
@@ -49,32 +51,54 @@
     white-space: -moz-pre-wrap;
     white-space: -pre-wrap;
     white-space: -o-pre-wrap;
+    background-color: #333;
     color: #DDD;
     max-height: 400px;
     overflow-y: auto;
 }
 
 .post-footer {
-    background-color: rgba(8, 0, 255, 0.025);
     border-radius: 0 0 10px 10px;
-    padding: 10px;
-    text-align: left;
+    padding: 10px 20px 10px 20px;
     font-size: 20px;
+    height: 40px;
+}
+.post-score-container {
+    float: left;
+}
+.post-footer-comment-container
+{
+    float: right;
 }
 .post-vote,
 .post-vote:visited {
     text-decoration-line: none;
 }
-.post-upvote {
-    color: #66B00C;
+.post-upvote, .post-upvote:visited, .post-upvote:active, .post-upvote:hover, .post-upvote:focus {
+    color: #AAA;
 }
-.post-downvote {
-    color: #C43030;
+.post-downvote, .post-downvote:visited, .post-downvote:active, .post-downvote:hover, .post-downvote:focus {
+    color: #AAA;
 }
-.post-vote:active,
-.post-vote:focus,
+.post-upvote.vote-selected {
+    color: green;
+}
+.post-downvote.vote-selected {
+    color: rgb(158, 14, 14);
+}
 .post-vote:hover {
     filter: brightness(175%);
+}
+.post-footer-comment {
+    float: right;
+    text-decoration-line: none;
+}
+.post-footer-comment > img {
+    height: 22px;
+    vertical-align: text-bottom;
+}
+.post-comments-container {
+    height: 100px;
 }
 
 .new-post-link {

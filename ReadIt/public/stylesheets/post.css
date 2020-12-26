@@ -1,0 +1,12 @@
+div#posts-container {
+    -moz-column-count: unset;
+    -moz-column-gap: unset;
+    -webkit-column-count: unset;
+    -webkit-column-gap: unset;
+    column-count: unset;
+    column-gap: unset;
+}
+#post-reply-button {
+    margin: 5px;
+    text-decoration: none;
+}
