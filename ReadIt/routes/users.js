@@ -198,6 +198,14 @@ usersRouter.get('/profile/:displayName', function(req, res, next) {
         {
           jsonifiedResult[index].comments[i].authorUrl = "/users/profile/" + jsonifiedResult[index].comments[i].author.username;
           jsonifiedResult[index].comments[i].author = jsonifiedResult[index].comments[i].author.displayName;
+          if(req.user)
+          {
+            let vote = jsonifiedResult[index].comments[i].votes.find((x) => x.user.toString() == req.user._id.toString());
+            if(vote && vote.state == 1)
+              jsonifiedResult[index].comments[i].upvoted = true;
+            else if(vote && vote.state == -1)
+              jsonifiedResult[index].comments[i].downvoted = true;
+          }
         }
         if(req.user)
         {

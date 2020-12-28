@@ -48,6 +48,14 @@ postsRouter.get('/', function(req, res, next) {
         {
           jsonifiedResult[index].comments[i].authorUrl = "/users/profile/" + jsonifiedResult[index].comments[i].author.username;
           jsonifiedResult[index].comments[i].author = jsonifiedResult[index].comments[i].author.displayName;
+          if(req.user)
+          {
+            let vote = jsonifiedResult[index].comments[i].votes.find((x) => x.user.toString() == req.user._id.toString());
+            if(vote && vote.state == 1)
+              jsonifiedResult[index].comments[i].upvoted = true;
+            else if(vote && vote.state == -1)
+              jsonifiedResult[index].comments[i].downvoted = true;
+          }
         }
         if(req.user)
         {
@@ -178,6 +186,14 @@ postsRouter.get('/:postId', function(req, res, next) {
       {
         jsonifiedResult.comments[i].author = posts[0].comments[i].author.displayName;
         jsonifiedResult.comments[i].authorUrl = "/users/profile/" + posts[0].comments[i].author.username;
+        if(req.user)
+        {
+          let vote = jsonifiedResult.comments[i].votes.find((x) => x.user.toString() == req.user._id.toString());
+          if(vote && vote.state == 1)
+            jsonifiedResult.comments[i].upvoted = true;
+          else if(vote && vote.state == -1)
+            jsonifiedResult.comments[i].downvoted = true;
+        }
       }
       if(req.user)
       {
@@ -251,6 +267,65 @@ postsRouter.post('/:postId/comment', [
         }
       });
     }
+  }
+});
+
+postsRouter.post('/:postId/comment/:commentId/vote', function(req, res, next) {
+  //!This is meant to be done via AJAX, so responses aren't views
+
+  console.log("upvote start");
+  //Need to be signed in for this action
+  if(req.user)
+  {
+    let wantedVote = req.body.vote;
+    console.log("wantedVote is:" + wantedVote);
+
+    //Make the vote
+    Post.findById(req.params.postId, function(postFindErr, postFindResult) {
+      if(postFindErr)
+      {
+        console.log(postFindErr);
+        res.send({error: JSON.stringify(postFindErr)});
+      }
+      else
+      {
+        console.log("postFindResult:");
+        console.log(postFindResult);
+        let commentIndex = postFindResult.comments.findIndex((x) => x._id.toString() == req.params.commentId.toString());
+        console.log("commentIndex: " + commentIndex);
+
+        let oldVoteIndex = postFindResult.comments[commentIndex].votes.findIndex((x) => x.user.toString() == req.user._id.toString());
+        console.log("oldVoteIndex: " + oldVoteIndex);
+
+        let newVoteState = wantedVote;
+        //if found old vote...
+        if(oldVoteIndex >= 0)
+        {
+          //...update it
+          if(postFindResult.comments[commentIndex].votes[oldVoteIndex].state == wantedVote)
+            postFindResult.comments[commentIndex].votes[oldVoteIndex].state = newVoteState = 0; //if upvote/downvote is clicked when said vote is already active, remove it - i.e. neutral vote
+          else
+            postFindResult.comments[commentIndex].votes[oldVoteIndex].state = wantedVote;
+        }
+        else
+          postFindResult.comments[commentIndex].votes.push({user: req.user._id, state: wantedVote}); //...else make new vote
+        
+        //count new score
+        let newScore = 0;
+        for(let i = 0; i < postFindResult.comments[commentIndex].votes.length; i++)
+          newScore+= postFindResult.comments[commentIndex].votes[i].state;
+        
+        //update and save
+        postFindResult.comments[commentIndex].points = newScore;
+        postFindResult.save();
+
+        res.send({state: newVoteState, score: newScore});
+      }
+    });
+  }
+  else
+  {
+    res.send({error: 'login'});
   }
 });
 
