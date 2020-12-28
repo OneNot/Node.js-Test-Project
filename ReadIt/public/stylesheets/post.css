@@ -7,6 +7,42 @@ div#posts-container {
     column-gap: unset;
 }
 #post-reply-button {
-    margin: 5px;
     text-decoration: none;
+}
+#comment-writer {
+    display: none;
+}
+.post-footer-comment {
+    margin-left: 5px;
+}
+
+#comment-writer form {
+    width: 600px;
+    margin: 0 auto 20px auto;
+}
+#comment-writer textarea {
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px;
+    width: 100%;
+    display: block;
+    margin: auto;
+    font-size: 16px;
+    height: 120px;
+    overflow-y: auto;
+}
+#comment-writer input[type="submit"] {
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px;
+    width: auto;
+    height: 40px;
+    font-size: 20px;
+    cursor: pointer;
+    display: inline-block;
+    margin: 5px;
 }

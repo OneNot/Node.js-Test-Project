@@ -10,32 +10,37 @@
             </div>
             <div class="post-footer">
                 <div class="post-score-container">
-                    <a href="#" data-post-url="/posts/{{this._id}}/vote" class="post-vote post-upvote {{#if this.upvoted}}vote-selected{{/if}}" title="upvote">▲</a>
+                    <a href="#upvote" data-post-url="/posts/{{this._id}}/vote" class="post-vote post-upvote {{#if this.upvoted}}vote-selected{{/if}}" title="upvote">▲</a>
                     <span>/</span>
-                    <a href="#" data-post-url="/posts/{{this._id}}/vote" class="post-vote post-downvote {{#if this.downvoted}}vote-selected{{/if}}" title="downvote">▼</a>
+                    <a href="#downvote" data-post-url="/posts/{{this._id}}/vote" class="post-vote post-downvote {{#if this.downvoted}}vote-selected{{/if}}" title="downvote">▼</a>
                     <span class="post-score">{{this.points}}</span>
                 </div>
                 <div class="post-footer-comment-container">
-                    <a id="post-reply-button" href="#">Reply</a><a class="post-footer-comment" href="#"><img src="/images/icons/comment-icon.png" />{{numOfComments}}</a>
+                    {{#if @root.user}}<a id="post-reply-button" href="#">Reply</a>{{else}}<a href="/users/login">Login to reply</a>{{/if}}<a class="post-footer-comment" href="#comments"><img src="/images/icons/comment-icon.png" />{{numOfComments}}</a>
                 </div>
             </div>
+            <div id="comment-writer">
+                <form action="/posts/{{this._id}}/comment" method="POST">
+                    <textarea name="content" required></textarea>
+                    <input type="submit" name="submit" value="Post Comment"/>
+                </form>
+            </div>
             {{#if comments}}
-            <div class="post-comments-container">
+            <div id="comments" class="post-comments-container">
+                <h2>Comments</h2>
                 {{#each comments}}
                     <div class="post-comment-container">
                         <div class="post-comment-header">
-                            <a href="#">AUTHOR</a>
+                            <a href="{{authorUrl}}">{{author}}</a>
                         </div>
                         <div class="post-comment-body">
-                            <pre class="post-comment-content">
-                                This is a comment.
-                            </pre>
+                            <pre class="post-comment-content">{{content}}</pre>
                         </div>
                         <div class="post-comment-footer">
                             <div class="post-comment-score-container">
-                                <a href="#" class="post-vote post-upvote" title="upvote">▲</a>
+                                <a href="#upvote" class="post-vote post-upvote" title="upvote">▲</a>
                                 <span>/</span>
-                                <a href="#" class="post-vote post-downvote" title="downvote">▼</a>
+                                <a href="#downvote" class="post-vote post-downvote" title="downvote">▼</a>
                                 <span class="post-score">0</span>
                             </div>
                         </div>

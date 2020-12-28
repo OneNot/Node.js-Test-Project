@@ -5,6 +5,7 @@ const Post = require('../models/post');
 const he = require('he');
 //validator
 const { body, validationResult } = require('express-validator');
+const post = require('../models/post');
 
 postsRouter.use(bodyParser.json());
 
@@ -23,6 +24,7 @@ postsRouter.get('/', function(req, res, next) {
 
   Post.find({})
   .populate('author')
+  .populate({ path: 'comments.author' })
   .sort({'updatedAt': -1})
   .limit(10)
   .exec(function(err, posts) {
@@ -41,6 +43,12 @@ postsRouter.get('/', function(req, res, next) {
         jsonifiedResult[index].title = he.decode(jsonifiedResult[index].title);
         jsonifiedResult[index].content = he.decode(jsonifiedResult[index].content);
         jsonifiedResult[index].numOfComments = jsonifiedResult[index].comments.length;
+        jsonifiedResult[index].comments = jsonifiedResult[index].comments.splice(1); //remove all but the first comment from display. Could be changed later...
+        for(let i = 0; i < jsonifiedResult[index].comments.length; i++)
+        {
+          jsonifiedResult[index].comments[i].authorUrl = "/users/profile/" + jsonifiedResult[index].comments[i].author.username;
+          jsonifiedResult[index].comments[i].author = jsonifiedResult[index].comments[i].author.displayName;
+        }
         if(req.user)
         {
           let vote = jsonifiedResult[index].votes.find((x) => x.user.toString() == req.user._id.toString());
@@ -63,111 +71,8 @@ postsRouter.get('/', function(req, res, next) {
   });
 });
 
-postsRouter.get('/:postId', function(req, res, next) {
-  Post.find({_id: req.params.postId})
-  .populate('author')
-  .exec(function(err, posts) {
-
-    let _jsonUser;
-    //Signed in user
-    if(req.user)
-    {
-      _jsonUser = {
-        username: req.user.username,
-        displayName: req.user.displayName
-      };
-    }
-
-    let jsonifiedResult = null;
-    if(err)
-    {
-      console.log(err);
-      next(err);
-    }
-    else
-    {
-      console.log(posts);
-      jsonifiedResult = JSON.parse(JSON.stringify(posts[0]));
-      console.log(jsonifiedResult);
-      jsonifiedResult.author = posts[0].author.displayName;
-      jsonifiedResult.authorUrl = "/users/profile/" + posts[0].author.username;
-      jsonifiedResult.title = he.decode(jsonifiedResult.title);
-      jsonifiedResult.content = he.decode(jsonifiedResult.content);
-      jsonifiedResult.numOfComments = jsonifiedResult.comments.length;
-      if(req.user)
-        {
-          let vote = jsonifiedResult.votes.find((x) => x.user.toString() == req.user._id.toString());
-          if(vote && vote.state == 1)
-            jsonifiedResult.upvoted = true;
-          else if(vote && vote.state == -1)
-            jsonifiedResult.downvoted = true;
-        }
-      console.log(jsonifiedResult);
-    }
-    res.render('post', {
-      pageTitle: 'Post: ' + (jsonifiedResult ? jsonifiedResult.title : 'Not found'),
-      user: _jsonUser,
-      post: jsonifiedResult,
-      extraCSS: ["posts", "post"],
-      extraJS: ["posts"]
-    });
-  })
-});
-
-postsRouter.post('/:postId/vote', function(req, res, next) {
-
-  //!This is meant to be done via AJAX, so responses are json
-
-  console.log("upvote start");
-  //Need to be signed in for this action
-  if(req.user)
-  {
-    let wantedVote = req.body.vote;
-    console.log("wantedVote is:" + wantedVote);
-
-    //Make the vote
-    Post.findById(req.params.postId, function(err, result) {
-      if(err)
-      {
-        console.log(err);
-        res.send({error: JSON.stringify(err)});
-      }
-      else
-      {    
-        let oldVoteIndex = result.votes.findIndex((x) => x.user.toString() == req.user._id.toString());
-        let newVoteState = wantedVote;
-        //if found old vote...
-        if(oldVoteIndex >= 0)
-        {
-          //...update it
-          if(result.votes[oldVoteIndex].state == wantedVote)
-            result.votes[oldVoteIndex].state = newVoteState = 0; //if upvote/downvote is clicked when said vote is already active, remove it - i.e. neutral vote
-          else
-            result.votes[oldVoteIndex].state = wantedVote;
-        }
-        else
-          result.votes.push({user: req.user._id, state: wantedVote}); //...else make new vote
-        
-        //count new score
-        let newScore = 0;
-        for(let i = 0; i < result.votes.length; i++)
-          newScore+= result.votes[i].state;
-        
-        //update and save
-        result.points = newScore;
-        result.save();
-
-        res.send({state: newVoteState, score: newScore}); //TODO: passing the state here directly because currently can't remove votes, only override. i.e. up <-> down, but can't return to zero state: FIX LATER? 
-      }
-    });
-  }
-  else
-  {
-    res.send({error: 'login'});
-  }
-});
-
 postsRouter.get('/create-post', function(req, res, next) {
+  console.log("CREATE POST PAGE GET");
   console.log(req.user);
   if(!req.user)
     res.redirect('/users/login'); //if not logged in, re-direct to login
@@ -184,7 +89,7 @@ postsRouter.get('/create-post', function(req, res, next) {
 postsRouter.post('/create-post', [
   //Validation
   body('title').trim().escape().notEmpty().withMessage("Title cannot be empty"),
-  body('content').escape().notEmpty().withMessage("Content cannot be empty"),
+  body('content').escape().notEmpty().withMessage("Content cannot be empty")
   //TODO: Should validate tags too... Probably check that all of them are allowed tags
 ], (req, res, next) => {
   //Validation done
@@ -232,6 +137,172 @@ postsRouter.post('/create-post', [
         //next(err);
       });
     }
+  }
+});
+
+postsRouter.get('/:postId', function(req, res, next) {
+  console.log("POSTID GET CALLED");
+  Post.find({_id: req.params.postId})
+  .populate('author')
+  .populate({ path: 'comments.author' })
+  .exec(function(err, posts) {
+
+    let _jsonUser;
+    //Signed in user
+    if(req.user)
+    {
+      _jsonUser = {
+        username: req.user.username,
+        displayName: req.user.displayName
+      };
+    }
+
+    let jsonifiedResult = null;
+    if(err)
+    {
+      console.log(err);
+      next(err);
+    }
+    else
+    {
+      console.log("POSTS:");
+      console.log(posts);
+      jsonifiedResult = JSON.parse(JSON.stringify(posts[0]));
+      console.log(jsonifiedResult);
+      jsonifiedResult.author = posts[0].author.displayName;
+      jsonifiedResult.authorUrl = "/users/profile/" + posts[0].author.username;
+      jsonifiedResult.title = he.decode(jsonifiedResult.title);
+      jsonifiedResult.content = he.decode(jsonifiedResult.content);
+      jsonifiedResult.numOfComments = jsonifiedResult.comments.length;
+      for(let i = 0; i < posts[0].comments.length; i++)
+      {
+        jsonifiedResult.comments[i].author = posts[0].comments[i].author.displayName;
+        jsonifiedResult.comments[i].authorUrl = "/users/profile/" + posts[0].comments[i].author.username;
+      }
+      if(req.user)
+      {
+        let vote = jsonifiedResult.votes.find((x) => x.user.toString() == req.user._id.toString());
+        if(vote && vote.state == 1)
+          jsonifiedResult.upvoted = true;
+        else if(vote && vote.state == -1)
+          jsonifiedResult.downvoted = true;
+      }
+      console.log("Jsonified post:");
+      console.log(jsonifiedResult);
+    }
+    res.render('post', {
+      pageTitle: 'Post: ' + (jsonifiedResult ? jsonifiedResult.title : 'Not found'),
+      user: _jsonUser,
+      post: jsonifiedResult,
+      extraCSS: ["posts", "post"],
+      extraJS: ["posts", "post-reply"]
+    });
+  })
+});
+
+postsRouter.post('/:postId/comment', [
+  //validate
+  body('content').escape().notEmpty().withMessage("Content cannot be empty")
+], (req, res, next) => {
+
+  //Validation done
+  if(!req.user)
+    res.redirect('/users/login'); //if not logged in, re-direct to login
+  else
+  {
+    console.log("Validation done");
+    var validationErr = validationResult(req);
+    //if there were validation errors...
+    if (!validationErr.isEmpty())
+    {
+      console.log("Validation Errors:");
+      console.log(validationErr.array());
+
+      //TODO: Need to figure out how to pass along the errors through the redirect... I suppose the flash thing might be it, but we'll see... 
+      res.redirect('/posts/'+req.params.postId);
+    }
+    else
+    {
+      //find right post
+      Post.findById(req.params.postId, function(findErr, post) {
+        if(findErr)
+        {
+          console.log(findErr);
+          //TODO: Need to figure out how to pass along the errors through the redirect... I suppose the flash thing might be it, but we'll see... 
+          res.redirect('/posts/'+req.params.postId);
+        }
+        else
+        {
+          //add new comment
+          post.comments.push({author: req.user._id, content: req.body.content});
+          post.save((saveErr, doc) => {
+            if(saveErr)
+            {
+              console.log(saveErr);
+              //TODO: Need to figure out how to pass along the errors through the redirect... I suppose the flash thing might be it, but we'll see... 
+              res.redirect('/posts/'+req.params.postId);
+            }
+            else
+            {
+              //redirect to post page with #comments to focus the page onto the comments section
+              res.redirect('/posts/'+req.params.postId+'#comments');
+            }
+          });
+        }
+      });
+    }
+  }
+});
+
+postsRouter.post('/:postId/vote', function(req, res, next) {
+  //!This is meant to be done via AJAX, so responses aren't views
+
+  console.log("upvote start");
+  //Need to be signed in for this action
+  if(req.user)
+  {
+    let wantedVote = req.body.vote;
+    console.log("wantedVote is:" + wantedVote);
+
+    //Make the vote
+    Post.findById(req.params.postId, function(err, result) {
+      if(err)
+      {
+        console.log(err);
+        res.send({error: JSON.stringify(err)});
+      }
+      else
+      {    
+        let oldVoteIndex = result.votes.findIndex((x) => x.user.toString() == req.user._id.toString());
+        let newVoteState = wantedVote;
+        //if found old vote...
+        if(oldVoteIndex >= 0)
+        {
+          //...update it
+          if(result.votes[oldVoteIndex].state == wantedVote)
+            result.votes[oldVoteIndex].state = newVoteState = 0; //if upvote/downvote is clicked when said vote is already active, remove it - i.e. neutral vote
+          else
+            result.votes[oldVoteIndex].state = wantedVote;
+        }
+        else
+          result.votes.push({user: req.user._id, state: wantedVote}); //...else make new vote
+        
+        //count new score
+        let newScore = 0;
+        for(let i = 0; i < result.votes.length; i++)
+          newScore+= result.votes[i].state;
+        
+        //update and save
+        result.points = newScore;
+        result.save();
+
+        res.send({state: newVoteState, score: newScore}); //TODO: passing the state here directly because currently can't remove votes, only override. i.e. up <-> down, but can't return to zero state: FIX LATER? 
+      }
+    });
+  }
+  else
+  {
+    res.send({error: 'login'});
   }
 });
 

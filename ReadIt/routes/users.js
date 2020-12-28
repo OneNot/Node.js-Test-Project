@@ -172,6 +172,7 @@ usersRouter.get('/profile/:displayName', function(req, res, next) {
 
     Post.find({author: FoundUser._id})
     .populate('author')
+    .populate({ path: 'comments.author' })
     .sort({'updatedAt': -1})
     .limit(10)
     .exec(function(err, posts) {
@@ -191,6 +192,13 @@ usersRouter.get('/profile/:displayName', function(req, res, next) {
         jsonifiedResult[index].authorUrl = "/users/profile/" + posts[index].author.username;
         jsonifiedResult[index].title = he.decode(jsonifiedResult[index].title);
         jsonifiedResult[index].content = he.decode(jsonifiedResult[index].content);
+        jsonifiedResult[index].numOfComments = jsonifiedResult[index].comments.length;
+        jsonifiedResult[index].comments = jsonifiedResult[index].comments.splice(1); //remove all but the first comment from display. Could be changed later...
+        for(let i = 0; i < jsonifiedResult[index].comments.length; i++)
+        {
+          jsonifiedResult[index].comments[i].authorUrl = "/users/profile/" + jsonifiedResult[index].comments[i].author.username;
+          jsonifiedResult[index].comments[i].author = jsonifiedResult[index].comments[i].author.displayName;
+        }
         if(req.user)
         {
           let vote = jsonifiedResult[index].votes.find((x) => x.user.toString() == req.user._id.toString());
