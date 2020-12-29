@@ -28,7 +28,7 @@
                         <div class="post-comment-header">
                             <a href="{{authorUrl}}">{{author}}</a>
                             <span class="post-time" title="Last activity: {{lastActivity}}">{{postTime}}</span>
-                            {{#if userIsAuthor}}<a class="comment-delete" href="#delete-comment" title="Delete this comment">x</a>{{/if}}
+                            {{#if userIsAuthor}}<a class="comment-delete" href="#delete-comment" data-post-url="/posts/{{../_id}}/comment/{{_id}}/delete" title="Delete this comment">x</a>{{/if}}
                         </div>
                         <div class="post-comment-body">
                             <pre class="post-comment-content">{{content}}</pre>

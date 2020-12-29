@@ -39,4 +39,33 @@ $(function() {
             alert( "error" );
         })
     });
+
+    $(".comment-delete").click(function(e) {
+        e.preventDefault();
+
+        let comment = $(this).parent().parent(".post-comment-container");
+        if(!comment)
+            alert("Failed to get comment");
+
+            $.post($(this).data("postUrl"))
+            .done(function(data) {
+                if(data.error == 'login')
+                {
+                    if(confirm("You need to login to remove comments! Go to login page now?"))
+                        window.location.href = "/users/login";
+                }
+                else if(data.error)
+                {
+                    alert("error: " + data.error);
+                }
+                else
+                {
+                    //delete on the front end
+                    comment.remove();
+                }
+            })
+            .fail(function(err) {
+                alert( "error" );
+            });
+    });
 });

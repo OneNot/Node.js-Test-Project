@@ -90,7 +90,6 @@ usersRouter.post('/register', [
   }
 });
 
-
 //Login GET page
 usersRouter.get('/login', function(req, res, next) {
   //if logged in
@@ -184,46 +183,55 @@ usersRouter.get('/profile/:displayName', function(req, res, next) {
       }
       else
       {
-        jsonifiedResult = JSON.parse(JSON.stringify(posts));
-      }
-      console.log(jsonifiedResult);
-      for (let index = 0; index < jsonifiedResult.length; index++) {
-        jsonifiedResult[index].author = posts[index].author.displayName;
-        jsonifiedResult[index].authorUrl = "/users/profile/" + posts[index].author.username;
-        jsonifiedResult[index].title = he.decode(jsonifiedResult[index].title);
-        jsonifiedResult[index].content = he.decode(jsonifiedResult[index].content);
-        jsonifiedResult[index].numOfComments = jsonifiedResult[index].comments.length;
-
         //sort comments by date
-        jsonifiedResult[index].comments.sort(function(a,b){
-          return new Date(b.createdAt) - new Date(a.createdAt); //creating objects inside the sort function possibly not great, but whatever
+        posts.forEach(post => {
+          post.comments.sort(function(a,b){
+            return new Date(b.createdAt) - new Date(a.createdAt); //creating objects inside the sort function possibly not great, but whatever
+          });
         });
 
-        jsonifiedResult[index].comments.splice(1); //remove all but the first comment from display. Could be changed later...
-        jsonifiedResult[index].postTime = new Date(jsonifiedResult[index].createdAt).toLocaleString();
-        jsonifiedResult[index].lastActivity = new Date(jsonifiedResult[index].updatedAt).toLocaleString();
-        for(let i = 0; i < jsonifiedResult[index].comments.length; i++)
-        {
-          jsonifiedResult[index].comments[i].authorUrl = "/users/profile/" + jsonifiedResult[index].comments[i].author.username;
-          jsonifiedResult[index].comments[i].author = jsonifiedResult[index].comments[i].author.displayName;
-          jsonifiedResult[index].comments[i].postTime = new Date(jsonifiedResult[index].comments[i].createdAt).toLocaleString();
-          jsonifiedResult[index].comments[i].lastActivity = new Date(jsonifiedResult[index].comments[i].updatedAt).toLocaleString();
+        jsonifiedResult = JSON.parse(JSON.stringify(posts));
+        console.log(jsonifiedResult);
+        for (let index = 0; index < jsonifiedResult.length; index++) {
+          jsonifiedResult[index].author = posts[index].author.displayName;
+          jsonifiedResult[index].authorUrl = "/users/profile/" + posts[index].author.username;
+          jsonifiedResult[index].title = he.decode(jsonifiedResult[index].title);
+          jsonifiedResult[index].content = he.decode(jsonifiedResult[index].content);
+          jsonifiedResult[index].numOfComments = jsonifiedResult[index].comments.length;
+
+          //sort comments by date
+          jsonifiedResult[index].comments.sort(function(a,b){
+            return new Date(b.createdAt) - new Date(a.createdAt); //creating objects inside the sort function possibly not great, but whatever
+          });
+
+          jsonifiedResult[index].comments.splice(1); //remove all but the first comment from display. Could be changed later...
+          jsonifiedResult[index].postTime = new Date(jsonifiedResult[index].createdAt).toLocaleString();
+          jsonifiedResult[index].lastActivity = new Date(jsonifiedResult[index].updatedAt).toLocaleString();
+          for(let i = 0; i < jsonifiedResult[index].comments.length; i++)
+          {
+            jsonifiedResult[index].comments[i].authorUrl = "/users/profile/" + jsonifiedResult[index].comments[i].author.username;
+            jsonifiedResult[index].comments[i].author = jsonifiedResult[index].comments[i].author.displayName;
+            jsonifiedResult[index].comments[i].postTime = new Date(jsonifiedResult[index].comments[i].createdAt).toLocaleString();
+            jsonifiedResult[index].comments[i].lastActivity = new Date(jsonifiedResult[index].comments[i].updatedAt).toLocaleString();
+            if(req.user)
+            {
+              jsonifiedResult[index].comments[i].userIsAuthor = (req.user._id.toString() == posts[index].comments[i].author._id.toString() ? true : false);
+
+              let vote = jsonifiedResult[index].comments[i].votes.find((x) => x.user.toString() == req.user._id.toString());
+              if(vote && vote.state == 1)
+                jsonifiedResult[index].comments[i].upvoted = true;
+              else if(vote && vote.state == -1)
+                jsonifiedResult[index].comments[i].downvoted = true;
+            }
+          }
           if(req.user)
           {
-            let vote = jsonifiedResult[index].comments[i].votes.find((x) => x.user.toString() == req.user._id.toString());
+            let vote = jsonifiedResult[index].votes.find((x) => x.user.toString() == req.user._id.toString());
             if(vote && vote.state == 1)
-              jsonifiedResult[index].comments[i].upvoted = true;
+              jsonifiedResult[index].upvoted = true;
             else if(vote && vote.state == -1)
-              jsonifiedResult[index].comments[i].downvoted = true;
+              jsonifiedResult[index].downvoted = true;
           }
-        }
-        if(req.user)
-        {
-          let vote = jsonifiedResult[index].votes.find((x) => x.user.toString() == req.user._id.toString());
-          if(vote && vote.state == 1)
-            jsonifiedResult[index].upvoted = true;
-          else if(vote && vote.state == -1)
-            jsonifiedResult[index].downvoted = true;
         }
       }
       console.log(jsonifiedResult);

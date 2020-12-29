@@ -36,6 +36,14 @@ postsRouter.get('/', function(req, res, next) {
     }
     else
     {
+
+      //sort comments by date
+      posts.forEach(post => {
+        post.comments.sort(function(a,b){
+          return new Date(b.createdAt) - new Date(a.createdAt); //creating objects inside the sort function possibly not great, but whatever
+        });
+      });
+
       jsonifiedResult = JSON.parse(JSON.stringify(posts));
 
       for (let index = 0; index < jsonifiedResult.length; index++)
@@ -45,11 +53,6 @@ postsRouter.get('/', function(req, res, next) {
         jsonifiedResult[index].title = he.decode(jsonifiedResult[index].title);
         jsonifiedResult[index].content = he.decode(jsonifiedResult[index].content);
         jsonifiedResult[index].numOfComments = jsonifiedResult[index].comments.length;
-
-        //sort comments by date
-        jsonifiedResult[index].comments.sort(function(a,b){
-          return new Date(b.createdAt) - new Date(a.createdAt); //creating objects inside the sort function possibly not great, but whatever
-        });
 
         jsonifiedResult[index].comments.splice(1); //remove all but the first comment from display. Could be changed later...
 
@@ -190,6 +193,12 @@ postsRouter.get('/:postId', function(req, res, next) {
     {
       console.log("POSTS:");
       console.log(posts);
+
+      //sort comments by date
+      posts[0].comments.sort(function(a,b){
+        return new Date(b.createdAt) - new Date(a.createdAt); //creating objects inside the sort function possibly not great, but whatever
+      });
+
       jsonifiedResult = JSON.parse(JSON.stringify(posts[0]));
       console.log(jsonifiedResult);
       jsonifiedResult.author = posts[0].author.displayName;
@@ -199,11 +208,6 @@ postsRouter.get('/:postId', function(req, res, next) {
       jsonifiedResult.numOfComments = jsonifiedResult.comments.length;
       jsonifiedResult.postTime = new Date(jsonifiedResult.createdAt).toLocaleString();
       jsonifiedResult.lastActivity = new Date(jsonifiedResult.updatedAt).toLocaleString();
-
-      //sort comments by date
-      jsonifiedResult.comments.sort(function(a,b){
-        return new Date(b.createdAt) - new Date(a.createdAt); //creating objects inside the sort function possibly not great, but whatever
-      });
 
       for(let i = 0; i < posts[0].comments.length; i++)
       {
@@ -441,6 +445,59 @@ postsRouter.post('/:postId/comment', [
         }
       });
     }
+  }
+});
+
+postsRouter.post('/:postId/comment/:commentId/delete', function(req, res, next) {
+  //!This is meant to be done via AJAX, so responses aren't views
+
+  console.log("comment delete start");
+  //Need to be signed in for this action
+  if(req.user)
+  {
+    Post.findById(req.params.postId, function(postFindErr, foundPost) {
+      if(postFindErr)
+      {
+        console.log(postFindErr);
+        res.send({error: postFindErr.toString()});
+      }
+      else
+      {
+        if(!foundPost || !foundPost.comments.id(req.params.commentId))
+        {
+          console.log("Comment not found");
+          res.send({error: "Comment not found!"});
+        }
+        else
+        {
+          console.log("comparing: " + foundPost.comments.id(req.params.commentId).author.toString() + " == " + req.user._id.toString());
+          if(foundPost.comments.id(req.params.commentId).author.toString() != req.user._id.toString())
+          {
+            console.log("You do not own this comment!");
+            res.send({error: "You do not own this comment!"});
+          }
+          else
+          {
+            foundPost.comments.id(req.params.commentId).remove();
+            foundPost.save(function(err, doc) {
+              if(err)
+              {
+                console.log(err);
+                res.send({error: err.toString()});
+              }
+              else
+              {
+                res.send({success: true});
+              }
+            });
+          }
+        }
+      }
+    });
+  }
+  else
+  {
+    res.send({error: 'login'});
   }
 });
 
