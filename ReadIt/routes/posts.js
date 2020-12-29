@@ -45,7 +45,14 @@ postsRouter.get('/', function(req, res, next) {
         jsonifiedResult[index].title = he.decode(jsonifiedResult[index].title);
         jsonifiedResult[index].content = he.decode(jsonifiedResult[index].content);
         jsonifiedResult[index].numOfComments = jsonifiedResult[index].comments.length;
-        jsonifiedResult[index].comments = jsonifiedResult[index].comments.splice(1); //remove all but the first comment from display. Could be changed later...
+
+        //sort comments by date
+        jsonifiedResult[index].comments.sort(function(a,b){
+          return new Date(b.createdAt) - new Date(a.createdAt); //creating objects inside the sort function possibly not great, but whatever
+        });
+
+        jsonifiedResult[index].comments.splice(1); //remove all but the first comment from display. Could be changed later...
+
         jsonifiedResult[index].postTime = new Date(jsonifiedResult[index].createdAt).toLocaleString();
         jsonifiedResult[index].lastActivity = new Date(jsonifiedResult[index].updatedAt).toLocaleString();
         for(let i = 0; i < jsonifiedResult[index].comments.length; i++)
@@ -56,6 +63,8 @@ postsRouter.get('/', function(req, res, next) {
           jsonifiedResult[index].comments[i].lastActivity = new Date(jsonifiedResult[index].comments[i].updatedAt).toLocaleString();
           if(req.user)
           {
+            jsonifiedResult[index].comments[i].userIsAuthor = (req.user._id.toString() == posts[index].comments[i].author._id.toString() ? true : false);
+
             let vote = jsonifiedResult[index].comments[i].votes.find((x) => x.user.toString() == req.user._id.toString());
             if(vote && vote.state == 1)
               jsonifiedResult[index].comments[i].upvoted = true;
@@ -190,6 +199,12 @@ postsRouter.get('/:postId', function(req, res, next) {
       jsonifiedResult.numOfComments = jsonifiedResult.comments.length;
       jsonifiedResult.postTime = new Date(jsonifiedResult.createdAt).toLocaleString();
       jsonifiedResult.lastActivity = new Date(jsonifiedResult.updatedAt).toLocaleString();
+
+      //sort comments by date
+      jsonifiedResult.comments.sort(function(a,b){
+        return new Date(b.createdAt) - new Date(a.createdAt); //creating objects inside the sort function possibly not great, but whatever
+      });
+
       for(let i = 0; i < posts[0].comments.length; i++)
       {
         jsonifiedResult.comments[i].author = posts[0].comments[i].author.displayName;
@@ -198,6 +213,8 @@ postsRouter.get('/:postId', function(req, res, next) {
         jsonifiedResult.comments[i].lastActivity = new Date(jsonifiedResult.comments[i].updatedAt).toLocaleString();
         if(req.user)
         {
+          jsonifiedResult.comments[i].userIsAuthor = (req.user._id.toString() == posts[0].comments[i].author._id.toString() ? true : false);
+
           let vote = jsonifiedResult.comments[i].votes.find((x) => x.user.toString() == req.user._id.toString());
           if(vote && vote.state == 1)
             jsonifiedResult.comments[i].upvoted = true;

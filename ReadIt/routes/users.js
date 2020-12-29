@@ -193,7 +193,13 @@ usersRouter.get('/profile/:displayName', function(req, res, next) {
         jsonifiedResult[index].title = he.decode(jsonifiedResult[index].title);
         jsonifiedResult[index].content = he.decode(jsonifiedResult[index].content);
         jsonifiedResult[index].numOfComments = jsonifiedResult[index].comments.length;
-        jsonifiedResult[index].comments = jsonifiedResult[index].comments.splice(1); //remove all but the first comment from display. Could be changed later...
+
+        //sort comments by date
+        jsonifiedResult[index].comments.sort(function(a,b){
+          return new Date(b.createdAt) - new Date(a.createdAt); //creating objects inside the sort function possibly not great, but whatever
+        });
+
+        jsonifiedResult[index].comments.splice(1); //remove all but the first comment from display. Could be changed later...
         jsonifiedResult[index].postTime = new Date(jsonifiedResult[index].createdAt).toLocaleString();
         jsonifiedResult[index].lastActivity = new Date(jsonifiedResult[index].updatedAt).toLocaleString();
         for(let i = 0; i < jsonifiedResult[index].comments.length; i++)
