@@ -1,0 +1,29 @@
+{{#with post}}
+<form id="create-post-form" action="/posts/{{_id}}/edit" method="POST">
+    <label for="title"><input name="title" type="text" value="{{title}}" placeholder="Post Title" required/></label>
+    <textarea name="content" placeholder="Post content..." required>{{content}}</textarea>
+    <div id="tag-dropdown-container">
+        <div id="tag-dropdown-header"><span>Tags</span><span id="tag-dropdown-header-arrow">▼</span></div>
+        <div id="tag-dropdown-body">
+            <ul class="tags">
+                <li><label><input type="checkbox" name="tags" value="tag1" {{checkedTags.tag1}}/>tag1</label></li>
+                <li><label><input type="checkbox" name="tags" value="tag2" {{checkedTags.tag2}}/>tag2</label></li>
+                <li><label><input type="checkbox" name="tags" value="tag3" {{checkedTags.tag3}}/>tag3</label></li>
+                <li><label><input type="checkbox" name="tags" value="tag4" {{checkedTags.tag4}}/>tag4</label></li>
+                <li><label><input type="checkbox" name="tags" value="tag5" {{checkedTags.tag5}}/>tag5</label></li>
+                <li><label><input type="checkbox" name="tags" value="tag6" {{checkedTags.tag6}}/>tag6</label></li>
+                <li><label><input type="checkbox" name="tags" value="tag7" {{checkedTags.tag7}}/>tag7</label></li>
+            </ul>
+        </div>
+    </div>
+    <input name="submit" type="submit" value="Post"/>
+</form>
+{{/with}}
+{{#if errors}}
+    <h3>Errors:</h3>
+    <ul>
+        {{#each errors}}
+            <li>{{this.msg}}</li>
+        {{/each}}
+    </ul>
+{{/if}}

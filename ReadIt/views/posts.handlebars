@@ -3,6 +3,7 @@
         <div class="post-container">
             <div class="post-header">
                 <h3 class="post-title" title="{{title}}"><a href="/posts/{{_id}}">{{title}}</a></h3>
+                <span class="post-time" title="Last activity: {{lastActivity}}">{{postTime}}</span>
                 <span class="post-author">by: <a href="{{authorUrl}}">{{author}}</a></span>
             </div>
             <div class="post-body">
@@ -26,6 +27,7 @@
                     <div class="post-comment-container">
                         <div class="post-comment-header">
                             <a href="{{authorUrl}}">{{author}}</a>
+                            <span class="post-time" title="Last activity: {{lastActivity}}">{{postTime}}</span>
                         </div>
                         <div class="post-comment-body">
                             <pre class="post-comment-content">{{content}}</pre>

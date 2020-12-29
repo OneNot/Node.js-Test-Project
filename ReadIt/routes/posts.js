@@ -6,6 +6,7 @@ const he = require('he');
 //validator
 const { body, validationResult } = require('express-validator');
 const post = require('../models/post');
+const { param } = require('./users');
 
 postsRouter.use(bodyParser.json());
 
@@ -37,17 +38,22 @@ postsRouter.get('/', function(req, res, next) {
     {
       jsonifiedResult = JSON.parse(JSON.stringify(posts));
 
-      for (let index = 0; index < jsonifiedResult.length; index++) {
+      for (let index = 0; index < jsonifiedResult.length; index++)
+      {
         jsonifiedResult[index].author = posts[index].author.displayName;
         jsonifiedResult[index].authorUrl = "/users/profile/" + posts[index].author.username;
         jsonifiedResult[index].title = he.decode(jsonifiedResult[index].title);
         jsonifiedResult[index].content = he.decode(jsonifiedResult[index].content);
         jsonifiedResult[index].numOfComments = jsonifiedResult[index].comments.length;
         jsonifiedResult[index].comments = jsonifiedResult[index].comments.splice(1); //remove all but the first comment from display. Could be changed later...
+        jsonifiedResult[index].postTime = new Date(jsonifiedResult[index].createdAt).toLocaleString();
+        jsonifiedResult[index].lastActivity = new Date(jsonifiedResult[index].updatedAt).toLocaleString();
         for(let i = 0; i < jsonifiedResult[index].comments.length; i++)
         {
           jsonifiedResult[index].comments[i].authorUrl = "/users/profile/" + jsonifiedResult[index].comments[i].author.username;
           jsonifiedResult[index].comments[i].author = jsonifiedResult[index].comments[i].author.displayName;
+          jsonifiedResult[index].comments[i].postTime = new Date(jsonifiedResult[index].comments[i].createdAt).toLocaleString();
+          jsonifiedResult[index].comments[i].lastActivity = new Date(jsonifiedResult[index].comments[i].updatedAt).toLocaleString();
           if(req.user)
           {
             let vote = jsonifiedResult[index].comments[i].votes.find((x) => x.user.toString() == req.user._id.toString());
@@ -80,7 +86,6 @@ postsRouter.get('/', function(req, res, next) {
 });
 
 postsRouter.get('/create-post', function(req, res, next) {
-  console.log("CREATE POST PAGE GET");
   console.log(req.user);
   if(!req.user)
     res.redirect('/users/login'); //if not logged in, re-direct to login
@@ -149,6 +154,7 @@ postsRouter.post('/create-post', [
 });
 
 postsRouter.get('/:postId', function(req, res, next) {
+  //TODO: order comments by date
   console.log("POSTID GET CALLED");
   Post.find({_id: req.params.postId})
   .populate('author')
@@ -182,10 +188,14 @@ postsRouter.get('/:postId', function(req, res, next) {
       jsonifiedResult.title = he.decode(jsonifiedResult.title);
       jsonifiedResult.content = he.decode(jsonifiedResult.content);
       jsonifiedResult.numOfComments = jsonifiedResult.comments.length;
+      jsonifiedResult.postTime = new Date(jsonifiedResult.createdAt).toLocaleString();
+      jsonifiedResult.lastActivity = new Date(jsonifiedResult.updatedAt).toLocaleString();
       for(let i = 0; i < posts[0].comments.length; i++)
       {
         jsonifiedResult.comments[i].author = posts[0].comments[i].author.displayName;
         jsonifiedResult.comments[i].authorUrl = "/users/profile/" + posts[0].comments[i].author.username;
+        jsonifiedResult.comments[i].postTime = new Date(jsonifiedResult.comments[i].createdAt).toLocaleString();
+        jsonifiedResult.comments[i].lastActivity = new Date(jsonifiedResult.comments[i].updatedAt).toLocaleString();
         if(req.user)
         {
           let vote = jsonifiedResult.comments[i].votes.find((x) => x.user.toString() == req.user._id.toString());
@@ -197,6 +207,7 @@ postsRouter.get('/:postId', function(req, res, next) {
       }
       if(req.user)
       {
+        jsonifiedResult.userIsAuthor = (req.user._id.toString() == posts[0].author._id.toString() ? true : false);
         let vote = jsonifiedResult.votes.find((x) => x.user.toString() == req.user._id.toString());
         if(vote && vote.state == 1)
           jsonifiedResult.upvoted = true;
@@ -214,6 +225,152 @@ postsRouter.get('/:postId', function(req, res, next) {
       extraJS: ["posts", "post-reply"]
     });
   })
+});
+
+postsRouter.get('/:postId/edit', function(req, res, next) {
+  console.log("post edit called");
+  console.log(req.user);
+  if(!req.user)
+    res.redirect('/users/login'); //if not logged in, re-direct to login
+  else
+  {
+    let jsonUser = {
+      username: req.user.username,
+      displayName: req.user.displayName
+    };
+    console.log("finding post...");
+    Post.findById(req.params.postId, function(err, foundPost) {
+      if(err)
+      {
+        console.log(err);
+        next(err);
+      }
+      else
+      {
+        if(foundPost)
+        {
+          console.log("post found:");
+          console.log(foundPost);
+          let jsonifiedPost = JSON.parse(JSON.stringify(foundPost));
+          jsonifiedPost.title = he.decode(jsonifiedPost.title);
+          jsonifiedPost.content = he.decode(jsonifiedPost.content);
+          
+          jsonifiedPost.checkedTags = {};
+          //TODO: tags are kind of an afterthought right now and aren't really used for anything. Still, using this method for now, at least until I make the tags properly...
+          for(let i = 0; i < jsonifiedPost.tags.length; i++)
+            jsonifiedPost.checkedTags[jsonifiedPost.tags[i]] = "checked";
+
+          console.log("jsonified post:");
+          console.log(jsonifiedPost);
+
+          //user is owner of this post
+          if(jsonifiedPost.author.toString() == req.user._id.toString())
+          {
+            res.render('edit-post', {
+              pageTitle: 'Edit Post',
+              user: jsonUser,
+              extraCSS: ["create-post"],
+              extraJS: ["create-post"],
+              post: jsonifiedPost
+            });
+          }
+          else
+          {
+            res.render('edit-post', {
+              pageTitle: 'Edit Post',
+              user: jsonUser,
+              extraCSS: ["create-post"],
+              extraJS: ["create-post"],
+              errors: [{msg: "You are not the author of this post!"}]
+            });
+          }
+        }
+        else
+        {
+          res.status(404).send('post not found');
+        }
+      }
+    });
+  }
+});
+
+postsRouter.post('/:postId/edit', [
+  //Validation
+  body('title').trim().escape().notEmpty().withMessage("Title cannot be empty"),
+  body('content').escape().notEmpty().withMessage("Content cannot be empty")
+], (req, res, next) => {
+  //Validation done
+  if(!req.user)
+    res.redirect('/users/login'); //if not logged in, re-direct to login
+  else
+  {
+
+    console.log("Validation done");
+    var errors = validationResult(req);
+    //if there were validation errors...
+    if (!errors.isEmpty())
+    {
+      console.log("Validation Errors:");
+      console.log(errors.array());
+
+      //re-load page with errors
+      res.render('edit-post', {
+        pageTitle: "Edit Post",
+        user: jsonUser,
+        extraCSS: ["create-post"],
+        extraJS: ["create-post"],
+        errors: errors.array()
+      });
+    }
+    else
+    {
+      //No validation errors
+      console.log("No validation errors, starting to update doc");
+
+      Post.findByIdAndUpdate(req.params.postId, { title: req.body.title, content: req.body.content, tags: req.body.tags }, {new: true}, function(err, updatedPost) {
+        if(err)
+        {
+          console.log(err);
+          //re-load page with errors
+          res.render('edit-post', {
+            pageTitle: "Edit Post",
+            user: jsonUser,
+            extraCSS: ["create-post"],
+            extraJS: ["create-post"],
+            errors: [err]
+          });
+        }
+        else
+        {
+          console.log("updated post:");
+          console.log(updatedPost);
+          res.redirect('/posts/'+req.params.postId);
+        }
+      });
+
+      //=============
+
+      // Post.create({author: req.user._id, title: req.body.title, content: req.body.content, tags: req.body.tags})
+      // .then((msg) => {
+      //   console.log("doc created");
+      //   //TODO: redirect to newly created post
+      //   res.redirect('/posts');
+      // }).catch((err) => {
+      //   //re-load page with errors
+      //   console.log("error creating doc");
+      //   console.log(err);
+      //   res.render('create-post', {
+      //     pageTitle: "Create Post",
+      //     user: jsonUser,
+      //     extraCSS: ["create-post"],
+      //     extraJS: ["create-post"],
+      //     errors: [{msg: err}] //not sure if this works
+      //   });
+      //   //next(err);
+      // });
+    }
+
+  }
 });
 
 postsRouter.post('/:postId/comment', [

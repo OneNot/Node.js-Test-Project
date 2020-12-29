@@ -194,10 +194,14 @@ usersRouter.get('/profile/:displayName', function(req, res, next) {
         jsonifiedResult[index].content = he.decode(jsonifiedResult[index].content);
         jsonifiedResult[index].numOfComments = jsonifiedResult[index].comments.length;
         jsonifiedResult[index].comments = jsonifiedResult[index].comments.splice(1); //remove all but the first comment from display. Could be changed later...
+        jsonifiedResult[index].postTime = new Date(jsonifiedResult[index].createdAt).toLocaleString();
+        jsonifiedResult[index].lastActivity = new Date(jsonifiedResult[index].updatedAt).toLocaleString();
         for(let i = 0; i < jsonifiedResult[index].comments.length; i++)
         {
           jsonifiedResult[index].comments[i].authorUrl = "/users/profile/" + jsonifiedResult[index].comments[i].author.username;
           jsonifiedResult[index].comments[i].author = jsonifiedResult[index].comments[i].author.displayName;
+          jsonifiedResult[index].comments[i].postTime = new Date(jsonifiedResult[index].comments[i].createdAt).toLocaleString();
+          jsonifiedResult[index].comments[i].lastActivity = new Date(jsonifiedResult[index].comments[i].updatedAt).toLocaleString();
           if(req.user)
           {
             let vote = jsonifiedResult[index].comments[i].votes.find((x) => x.user.toString() == req.user._id.toString());

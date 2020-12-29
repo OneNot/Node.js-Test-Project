@@ -6,6 +6,11 @@ div#posts-container {
     column-count: unset;
     column-gap: unset;
 }
+#post-edit-link {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+}
 #post-reply-button {
     text-decoration: none;
 }

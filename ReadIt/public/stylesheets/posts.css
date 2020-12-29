@@ -22,6 +22,7 @@
 .post-header {
     border-radius: 10px 10px 0 0;
     padding: 10px;
+    position: relative;
 }
 .post-title {
     margin: 0;
@@ -31,6 +32,13 @@
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
+}
+.post-time {
+    position: absolute;
+    top: 0px;
+    left: 10px;
+    color: #8e8e8e;
+    font-size: 12px;
 }
 .post-title a {
     text-decoration: none;
@@ -124,6 +132,7 @@
     background-color: #17161c;
     padding: 7px;
     border-radius: 10px 10px 0 0;
+    position: relative;
 }
 .post-comment-body {
     background-color: #17161c;
