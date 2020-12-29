@@ -9,22 +9,22 @@
 
 -Messages/Posts: title, contents, timestamps, author, points, tags(WIP), editing, NumberOfComments
 --Contents: basic
----Images: no, WIP_3 - Start with support for embeding from external sources, upload after if there's time
+---Images: no, WIP_2 - Start with support for embeding from external sources, upload after if there's time
 ---Special formatting: no (probably won't do)
 --Timestamps: Human readable original post datetime (createdAt) visible, last-activity (updated at) shown on hover
 --Points: AJAX POST for up/down vote (live changes with no refresh), votes are tracked by user (one vote per user), active/old votes are indicated votes can be changed up <-> down or to zero state
 --Tags: WIP, not visible to user anywhere except at create-post atm, specific predetermined tags technically supported currently
 --Editing: yes
 --NumberOfComments: yes, shown on post footers everywhere
---Can be viewn by anyone - making new posts, edits and voting are only available to logged in users
---Delete. no, WIP_2
+--Can be viewn by anyone - making new posts, edits, deletion and voting are only available to logged in users
+--Delete. no, WIP_1
 
 -Comments: contents, timestamps and points - working basically identically to Messages/Posts.
---Editing: no, WIP_4
+--Editing: no, WIP_3
 --Comments are made from the post page.
 --All comments are visible on the post page.
 --Only the latest comment per post is visible on pages where multiple posts are shown
---Delete: no, WIP_1
+--Delete: yes
 
 
 OTHER TODO:
