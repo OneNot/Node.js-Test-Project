@@ -10,6 +10,7 @@ const he = require('he');
 //validator
 const { body, validationResult } = require('express-validator');
 
+
 usersRouter.use(bodyParser.json());
 
 //Register GET page
@@ -150,7 +151,8 @@ usersRouter.get('/profile/:displayName', function(req, res, next) {
       _jsonFoundUser = {
         username: FoundUser.username,
         displayName: FoundUser.displayName,
-        email: FoundUser.email
+        email: FoundUser.email,
+        points: FoundUser.points
       };
     }
 

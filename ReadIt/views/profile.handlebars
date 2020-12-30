@@ -1,12 +1,9 @@
 {{#if foundUser}}
 <ul>
     {{#with foundUser}}
-        {{#if displayName}}
-            <li><span>Username: </span><span id="username">{{displayName}}</span></li>
-        {{/if}}
-        {{#if email}}
-            <li><span>Email: </span><span id="email">{{email}}</span></li>
-        {{/if}}
+        <li><span>Username: </span><span id="username">{{displayName}}</span></li>
+        <li><span>Email: </span><span id="email">{{email}}</span></li>
+        <!-- <li><span>Points: </span><span id="points">{{points}}</span></li> -->
     {{/with}}
     {{#if ownPage}}
         <li><span>(your profile)</span></li>

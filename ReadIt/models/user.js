@@ -6,6 +6,7 @@ var passportLocalMongoose = require('passport-local-mongoose');
 var UserSchema = new Schema({    
     displayName: {type: String, required: true}, // username is made lowercase, this one remains as given
     email: {type: String, required:true, unique:false}, //TODO: would probably like to set this to unique, but I would need to make a custom check for duplicates on registration. Might do that later.
+    points: {type: Number, default: 0}
 }); 
   
 // plugin for passport-local-mongoose 
