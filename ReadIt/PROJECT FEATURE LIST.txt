@@ -1,5 +1,6 @@
 
 -Sign in/up: yes
+--mongoose-local only, other sign in methods planned
 --Backend validation
 --Usernames are saved in lowercase for identification and uniqueness purposes
 --Seperate display name value is used for... well displaying

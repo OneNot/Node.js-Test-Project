@@ -58,3 +58,7 @@ div#posts-container {
     display: inline-block;
     margin: 5px;
 }
+
+.post-comment-content {
+    max-height: none;
+}
