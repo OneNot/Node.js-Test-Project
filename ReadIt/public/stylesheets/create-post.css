@@ -29,7 +29,7 @@
     height: 250px;
     overflow-y: auto;
 }
-#create-post-form input[name='submit'] {
+#create-post-form input[type='submit'] {
     width: auto;
     height: 40px;
     font-size: 20px;
@@ -37,11 +37,16 @@
     display: inline-block;
     vertical-align: top;
 }
-#create-post-form input[name='submit']:hover,
-#create-post-form input[name='submit']:active,
-#create-post-form input[name='submit']:focus {
+#create-post-form input[type='submit']:hover,
+#create-post-form input[type='submit']:active,
+#create-post-form input[type='submit']:focus {
     background-color: #444;
     border: solid #888 2px;
+}
+#create-post-form input[type="submit"]#delete-post-button {
+    float: right;
+    background-color: #532626;
+    color: #ea7575;
 }
 
 #tag-dropdown-container {

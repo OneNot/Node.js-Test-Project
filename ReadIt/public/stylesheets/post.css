@@ -6,6 +6,13 @@ div#posts-container {
     column-count: unset;
     column-gap: unset;
 }
+.post-body > .post-image {
+    max-width: 100%;
+    max-height: none;
+}
+.post-body > .post-content {
+    max-height: none;
+}
 #post-edit-link {
     position: absolute;
     right: 10px;

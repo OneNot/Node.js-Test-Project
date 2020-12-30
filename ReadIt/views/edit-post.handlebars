@@ -1,6 +1,7 @@
 {{#with post}}
 <form id="create-post-form" action="/posts/{{_id}}/edit" method="POST">
     <label for="title"><input name="title" type="text" value="{{title}}" placeholder="Post Title" required/></label>
+    <label for="image"><input name="image" type="url" placeholder="Post Image (optional)" value="{{image}}"/></label>
     <textarea name="content" placeholder="Post content..." required>{{content}}</textarea>
     <div id="tag-dropdown-container">
         <div id="tag-dropdown-header"><span>Tags</span><span id="tag-dropdown-header-arrow">▼</span></div>
@@ -16,7 +17,7 @@
             </ul>
         </div>
     </div>
-    <input name="submit" type="submit" value="Post"/>
+    <input name="submit" type="submit" value="Update"/><input id="delete-post-button" data-post-url="/posts/{{_id}}/delete" type="submit" value="Delete Post"/>
 </form>
 {{/with}}
 {{#if errors}}

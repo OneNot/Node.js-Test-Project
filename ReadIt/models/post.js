@@ -17,6 +17,7 @@ var CommentSchema = new Schema({
 var PostSchema = new Schema({
     author: {type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true},
     title: {type: String, required: true},
+    image: {type: String},
     content: {type: String, required: true},
     tags: [String],
     comments: [CommentSchema],

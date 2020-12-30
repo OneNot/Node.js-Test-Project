@@ -197,6 +197,9 @@ usersRouter.get('/profile/:displayName', function(req, res, next) {
           jsonifiedResult[index].authorUrl = "/users/profile/" + posts[index].author.username;
           jsonifiedResult[index].title = he.decode(jsonifiedResult[index].title);
           jsonifiedResult[index].content = he.decode(jsonifiedResult[index].content);
+          if(jsonifiedResult[index].image)
+            jsonifiedResult[index].image = he.decode(jsonifiedResult[index].image);
+
           jsonifiedResult[index].numOfComments = jsonifiedResult[index].comments.length;
 
           //sort comments by date

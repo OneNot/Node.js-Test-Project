@@ -52,6 +52,9 @@ postsRouter.get('/', function(req, res, next) {
         jsonifiedResult[index].authorUrl = "/users/profile/" + posts[index].author.username;
         jsonifiedResult[index].title = he.decode(jsonifiedResult[index].title);
         jsonifiedResult[index].content = he.decode(jsonifiedResult[index].content);
+        if(jsonifiedResult[index].image)
+          jsonifiedResult[index].image = he.decode(jsonifiedResult[index].image);
+
         jsonifiedResult[index].numOfComments = jsonifiedResult[index].comments.length;
 
         jsonifiedResult[index].comments.splice(1); //remove all but the first comment from display. Could be changed later...
@@ -114,7 +117,8 @@ postsRouter.get('/create-post', function(req, res, next) {
 postsRouter.post('/create-post', [
   //Validation
   body('title').trim().escape().notEmpty().withMessage("Title cannot be empty"),
-  body('content').escape().notEmpty().withMessage("Content cannot be empty")
+  body('content').escape().notEmpty().withMessage("Content cannot be empty"),
+  body('image').escape()
   //TODO: Should validate tags too... Probably check that all of them are allowed tags
 ], (req, res, next) => {
   //Validation done
@@ -143,7 +147,7 @@ postsRouter.post('/create-post', [
     {
       //No validation errors
       console.log("No validation errors, starting to create doc");
-      Post.create({author: req.user._id, title: req.body.title, content: req.body.content, tags: req.body.tags})
+      Post.create({author: req.user._id, title: req.body.title, image: req.body.image, content: req.body.content, tags: req.body.tags})
       .then((msg) => {
         console.log("doc created");
         //TODO: redirect to newly created post
@@ -189,7 +193,7 @@ postsRouter.get('/:postId', function(req, res, next) {
       console.log(err);
       next(err);
     }
-    else
+    else if(posts && posts[0])
     {
       console.log("POSTS:");
       console.log(posts);
@@ -205,6 +209,8 @@ postsRouter.get('/:postId', function(req, res, next) {
       jsonifiedResult.authorUrl = "/users/profile/" + posts[0].author.username;
       jsonifiedResult.title = he.decode(jsonifiedResult.title);
       jsonifiedResult.content = he.decode(jsonifiedResult.content);
+      if(jsonifiedResult.image)
+        jsonifiedResult.image = he.decode(jsonifiedResult.image);
       jsonifiedResult.numOfComments = jsonifiedResult.comments.length;
       jsonifiedResult.postTime = new Date(jsonifiedResult.createdAt).toLocaleString();
       jsonifiedResult.lastActivity = new Date(jsonifiedResult.updatedAt).toLocaleString();
@@ -248,6 +254,30 @@ postsRouter.get('/:postId', function(req, res, next) {
   })
 });
 
+postsRouter.post('/:postId/delete', function(req, res, next) {
+  console.log("post delete start");
+  //Need to be signed in for this action
+  if(req.user)
+  {
+    Post.findOneAndDelete({_id: req.params.postId, author: req.user._id}, function(err, result) {
+      if(err)
+      {
+        console.log("Post not found or not owned by current user");
+        res.redirect('/posts/'+req.params.postId);
+      }
+      else
+      {
+        console.log("Deletetion successful");
+        res.redirect('/posts');
+      }
+    });
+  }
+  else
+  {
+    res.send({error: 'login'});
+  }
+});
+
 postsRouter.get('/:postId/edit', function(req, res, next) {
   console.log("post edit called");
   console.log(req.user);
@@ -275,6 +305,8 @@ postsRouter.get('/:postId/edit', function(req, res, next) {
           let jsonifiedPost = JSON.parse(JSON.stringify(foundPost));
           jsonifiedPost.title = he.decode(jsonifiedPost.title);
           jsonifiedPost.content = he.decode(jsonifiedPost.content);
+          if(jsonifiedPost.image)
+            jsonifiedPost.image = he.decode(jsonifiedPost.image);
           
           jsonifiedPost.checkedTags = {};
           //TODO: tags are kind of an afterthought right now and aren't really used for anything. Still, using this method for now, at least until I make the tags properly...
@@ -318,7 +350,8 @@ postsRouter.get('/:postId/edit', function(req, res, next) {
 postsRouter.post('/:postId/edit', [
   //Validation
   body('title').trim().escape().notEmpty().withMessage("Title cannot be empty"),
-  body('content').escape().notEmpty().withMessage("Content cannot be empty")
+  body('content').escape().notEmpty().withMessage("Content cannot be empty"),
+  body('image').escape()
 ], (req, res, next) => {
   //Validation done
   if(!req.user)
@@ -348,7 +381,7 @@ postsRouter.post('/:postId/edit', [
       //No validation errors
       console.log("No validation errors, starting to update doc");
 
-      Post.findByIdAndUpdate(req.params.postId, { title: req.body.title, content: req.body.content, tags: req.body.tags }, {new: true}, function(err, updatedPost) {
+      Post.findByIdAndUpdate(req.params.postId, { title: req.body.title, image: req.body.image, content: req.body.content, tags: req.body.tags }, {new: true}, function(err, updatedPost) {
         if(err)
         {
           console.log(err);

@@ -22,6 +22,7 @@
                 <span class="post-author">by: <a href="{{authorUrl}}">{{author}}</a></span>
             </div>
             <div class="post-body">
+                {{#if image}}<img class="post-image" src="{{image}}" />{{/if}}
                 <pre class="post-content">{{content}}</pre>
             </div>
             <div class="post-footer">

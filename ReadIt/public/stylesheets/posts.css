@@ -51,6 +51,10 @@
     border-left: 50px solid transparent;
     border-right: 50px solid transparent;
 }
+.post-image {
+    max-width: 100%;
+    max-height: 300px;
+}
 .post-content {
     margin: 0;
     padding: 10px;
@@ -61,8 +65,9 @@
     white-space: -o-pre-wrap;
     background-color: #333;
     color: #DDD;
-    max-height: 400px;
+    max-height: 300px;
     overflow-y: auto;
+    text-align: left;
 }
 
 .post-footer {
